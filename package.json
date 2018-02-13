@@ -5,18 +5,32 @@
   "dependencies": {
     "body-parser": "^1.18.2",
     "connect": "^3.6.5",
+    "cron": "^1.3.0",
     "excel4node": "^1.3.5",
     "express": "^4.16.2",
     "multer": "^1.3.0",
+    "mysql": "^2.15.0",
     "node-xlsx": "^0.11.2",
     "nodemailer": "^4.4.2",
     "xlsx": "^0.11.18"
   },
-  "devDependencies": {},
   "scripts": {
-    "start": "node start.js"
+    "configure": "node ./scripts/configure.js",
+    "start": "node start.js",
+    "test": "node ./scripts/test.js",
+    "destroyEverything": "npm run destroyUsers && npm run destroyExcel",
+    "destroyUsers": "node ./scripts/destroyUsers.js",
+    "destroyExcel": "node ./scripts/destroyExcel.js"
   },
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PonyLianna/excel-zzap.git"
+  },
+  "bugs": {
+    "url": "https://github.com/PonyLianna/excel-zzap/issues"
+  },
+  "homepage": "https://github.com/PonyLianna/excel-zzap#readme"
 }
