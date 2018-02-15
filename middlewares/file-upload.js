@@ -1,7 +1,7 @@
-var multer = require('multer');
-var excel = require('./excel-processing');
+const multer = require('multer');
+const excel = require('./excel-processing');
 
-var storage = multer.diskStorage({
+let storage = multer.diskStorage({
     destination: function (req, file, callback) {
         callback(null, './uploads'); // Folder where you can find files
     },
@@ -10,7 +10,7 @@ var storage = multer.diskStorage({
     }
 });
 
-var upload = multer({storage: storage}).single('excel');
+let upload = multer({storage: storage}).single('excel');
 
 exports.upload_read = function (req, res, time) {
     upload(req, res, function (err) {
