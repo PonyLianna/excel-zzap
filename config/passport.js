@@ -6,7 +6,6 @@ const mysql = require('mysql');
 // load up the user model
 sql.config.database = "my_db";
 const connection = mysql.createConnection(sql.config);
-console.log(sql.config);
 // expose this function to our app using module.exports
 module.exports = function (passport) {
 

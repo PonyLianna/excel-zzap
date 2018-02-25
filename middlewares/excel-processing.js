@@ -4,7 +4,7 @@ const fs = require('fs');
 
 exports.read = function () {
     // console.log(time);
-    excel = xlsx.readFile("./uploads/test1.xlsx");
+    excel = xlsx.readFile("./uploads/test2.xlsx");
     console.log("Reading is successful");
     let sheet_name_list = excel.SheetNames;
     my_array = Array();
@@ -32,10 +32,10 @@ exports.read = function () {
 };
 
 exports.csv = function () {
-    excel = xlsx.readFile("./uploads/test1.xlsx");
+    excel = xlsx.readFile("./uploads/test2.xlsx");
     console.log("Reading is successful");
     let sheet_name_list = excel.SheetNames;
     stream = xlsx.stream.to_csv(excel.Sheets[sheet_name_list[0]]);
     console.log(stream);
-    stream.pipe(fs.createWriteStream('./uploads/test1.csv'));
+    stream.pipe(fs.createWriteStream('./uploads/test2.csv'));
 };

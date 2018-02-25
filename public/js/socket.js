@@ -1,7 +1,6 @@
 let token = sessionStorage.token;
 let socket = io.connect('http://localhost:8080');
 
-
 socket.on('connect', function () {
     socket.emit('authentication', {username: "John", password: "secret"});
     socket.on('authenticated', function () {
@@ -14,6 +13,6 @@ socket.on('message', function (data) {
 });
 
 $('#textbutton').click(function () {
-    // const message = token;
-    socket.emit('answer', token);
+    const message = $('#text').val();
+    socket.emit('answer', message);
 });

@@ -1,10 +1,13 @@
-module.exports = function (app, passport) {
-
+module.exports = function (app, passport, excel) {
     // =====================================
     // HOME PAGE ===========================
     // =====================================
     app.get('/', isLoggedIn, function (req, res) {
+
         res.sendFile('index.html', {root: './public'});
+        // const time = Date.now().toString(); // What is time now?
+        // excel.read(time);
+        // res.end('Success!');
     });
 
     // =====================================

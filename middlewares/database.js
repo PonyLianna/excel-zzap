@@ -8,12 +8,13 @@ let config = {
 
 exports.config = config;
 
-let excelColumn = "(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY," +
-    "Производитель VARCHAR(20), Артикул VARCHAR(100), Наименование VARCHAR(255), Цена INT(255), Количество INT(255)," +
-    "Срок_поставки INT(255), Минимальная_цена DECIMAL(10,2), Средняя_цена DECIMAL(10,2), Максимальная_цена DECIMAL(10,2))";
-let usersColumn = "(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, Имя VARCHAR(100) UNIQUE, Пароль VARCHAR(100), super TINYINT(1) ZEROFILL)";
-
+const excelColumn = "(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY," +
+    "Производитель VARCHAR(20), Артикул VARCHAR(100), Наименование VARCHAR(255), Цена INT(255), code_cat VARCHAR(20)," +
+    "Минимальная_цена DECIMAL(10,2), Средняя_цена DECIMAL(10,2), Максимальная_цена DECIMAL(10,2))";
+const usersColumn = "(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, Имя VARCHAR(100) UNIQUE, Пароль VARCHAR(100), super TINYINT(1) ZEROFILL)";
+const sellersColumn = "(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, Продавец VARCHAR(255), Артикул VARCHAR(100), Цена DECIMAL(10,2))";
 let database = "my_db";
+
 
 function create_database() {
     const sql = "CREATE DATABASE " + database + "CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
@@ -26,6 +27,7 @@ function create_database() {
 
             create_table("excel", excelColumn);
             create_table("users", usersColumn);
+            create_table("sellers", sellersColumn);
         });
     });
 }
@@ -72,9 +74,8 @@ exports.update = function (data) {
     const connection = mysql.createConnection(config);
     connection.connect(function (err) {
         if (err) throw err;
-        console.log();
         connection.query("INSERT INTO " + table + " (Производитель,Артикул,Наименование," +
-            "Цена,Количество,Срок_поставки) VALUES ?", [data], function () {
+            "Цена) VALUES ?", [data], function () {
             connection.end();
         });
     });
@@ -84,17 +85,16 @@ exports.update = function (data) {
 exports.db_csv = function () {
     config.database = database;
     config.flags = 'LOCAL_FILES';
-    const sql = "LOAD DATA INFILE '" + (__dirname + "/..").replace(/\\/g, "/") + "/uploads/test1.csv' " +
+    const sql = "LOAD DATA INFILE '" + (__dirname + "/..").replace(/\\/g, "/") + "/uploads/test2.csv' " +
         "INTO TABLE excel " +
         "CHARACTER SET UTF8 " +
         "FIELDS TERMINATED BY ',' " +
         "ENCLOSED BY '\"' " +
         "LINES TERMINATED BY '\\n' " +
-        "IGNORE 1 ROWS (Производитель,Артикул,Наименование,Цена,Количество,Срок_поставки) ";
+        "IGNORE 1 ROWS (Производитель,Артикул,Наименование,Цена) ";
     const connection = mysql.createConnection(config);
     connection.connect(function (err) {
         if (err) throw err;
-        console.log(sql);
         connection.query(sql, function (err) {
             if (err) throw err;
             connection.end();
@@ -130,4 +130,57 @@ exports.createUser = function (name, password, admin = '0') {
         });
 
     });
+};
+
+exports.getAllProducts = function () {
+    config.database = database;
+    const sql = "SELECT id, Производитель, Артикул FROM excel";
+    const connection = mysql.createConnection(config);
+    let promise = new Promise((resolve, reject) => {
+        connection.connect(function (err) {
+            if (err) throw err;
+            connection.query(sql, function (err, result, fields) {
+                if (err) throw err;
+                connection.end();
+                resolve(result);
+            });
+        });
+    });
+    return promise;
+};
+
+exports.addNewSeller = function (data) {
+    const table = "sellers";
+    config.database = database;
+    data = [data];
+    const sql = "INSERT INTO " + table + "(Продавец,Артикул,Цена) VALUES ?";
+    const connection = mysql.createConnection(config);
+    connection.connect(function (err) {
+        if (err) throw err;
+        connection.query(sql, [data], function (err) {
+            if (err) throw err;
+            console.log('Added new Seller ' + data);
+            connection.end();
+        });
+    });
+};
+
+exports.addCodecat = function (data) {
+    const table = "excel";
+    config.database = database;
+    const sql = "UPDATE " + table + " SET code_cat=" + data[1] + " WHERE id=" + data[0];
+    console.log(sql);
+    const connection = mysql.createConnection(config);
+    connection.connect(function (err) {
+        if (err) throw err;
+        connection.query(sql, function (err) {
+            if (err) throw err;
+            console.log('ID ' + data[0] + ' code_cat ' + data[1]);
+            connection.end();
+        });
+    });
+};
+
+exports.findPrices = function () {
+
 };
