@@ -31,7 +31,7 @@ module.exports = function (app, passport, excel) {
             failureFlash: true
         }),
         function (req, res) {
-            console.log("hello");
+            console.log('hello');
 
             if (req.body.remember) {
                 req.session.cookie.maxAge = 60 * 60; // 1 hour
@@ -65,7 +65,7 @@ function isLoggedIn(req, res, next) {
 
 function isAdmin(req, res, next) {
     console.log('Are u Admin?');
-    if (req.isAuthenticated() && req.user.super == "1")
+    if (req.isAuthenticated() && req.user.super == '1')
         return next();
     res.redirect('/');
 }

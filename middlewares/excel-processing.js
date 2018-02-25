@@ -4,8 +4,8 @@ const fs = require('fs');
 
 exports.read = function () {
     // console.log(time);
-    excel = xlsx.readFile("./uploads/test2.xlsx");
-    console.log("Reading is successful");
+    excel = xlsx.readFile('./uploads/test2.xlsx');
+    console.log('Reading is successful');
     let sheet_name_list = excel.SheetNames;
     my_array = Array();
     sheet = xlsx.utils.sheet_to_json(excel.Sheets[sheet_name_list[0]]);
@@ -20,20 +20,20 @@ exports.read = function () {
             if (err) throw err;
             let product = sheet[i];
             my_array.push([
-                product["Производитель"],
-                product["Артикул"],
-                product["Наименование"],
-                product["Цена"],
-                product["Количество"],
-                product["Срок поставки"]
+                product['Производитель'],
+                product['Артикул'],
+                product['Наименование'],
+                product['Цена'],
+                product['Количество'],
+                product['Срок поставки']
             ]);
         }
     }
 };
 
 exports.csv = function () {
-    excel = xlsx.readFile("./uploads/test2.xlsx");
-    console.log("Reading is successful");
+    excel = xlsx.readFile('./uploads/test2.xlsx');
+    console.log('Reading is successful');
     let sheet_name_list = excel.SheetNames;
     stream = xlsx.stream.to_csv(excel.Sheets[sheet_name_list[0]]);
     console.log(stream);

@@ -2,7 +2,7 @@ let token = sessionStorage.token;
 let socket = io.connect('http://localhost:8080');
 
 socket.on('connect', function () {
-    socket.emit('authentication', {username: "John", password: "secret"});
+    socket.emit('authentication', {username: 'John', password: 'secret'});
     socket.on('authenticated', function () {
         $('#info').append('<p>' + data + '</p>');
     });

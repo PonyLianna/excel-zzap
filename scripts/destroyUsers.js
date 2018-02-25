@@ -1,3 +1,3 @@
 const mysql = require('./../middlewares/database');
 
-mysql.destroy(mytable = "users");
+mysql.destroy(mytable = 'users');

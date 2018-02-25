@@ -5,7 +5,7 @@ module.exports = function (io) {
         socket.broadcast.emit('message', 'New Client is connected');
 
         socket.on('answer', function (message) {
-            console.log(message + " client " + +" saying!");
+            console.log(message + ' client ' + +' saying!');
             socket.emit('message', message);
         });
     });

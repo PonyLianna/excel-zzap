@@ -1,11 +1,4 @@
-// // We need this to build our post string
-// const querystring = require('querystring');
 const http = require('http');
-// const fs = require('fs');
-// const xml2js = require('xml2js');
-// const DomParser = require('dom-parser');
-// parser = new DomParser();
-// const parser = new xml2js.Parser();
 const request = require('request');
 const mysql = require('./../middlewares/database');
 
@@ -24,7 +17,7 @@ exports.GetSearchSuggestV2 = function (id, partnumber, class_man) {
             'location': 1,
             'row_count': 200,
             'type_request': 0,
-            'api_key': ''
+            'api_key': 'EAAAAGcMj3f9waDUKHTi2xCji/5Kv5ulafRPJHEoByJSNU9AZrUvWrHDK66VuMIKQSuKNg=='
         }
     };
     request(options, function (error, response, body) {

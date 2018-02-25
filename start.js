@@ -7,7 +7,7 @@ const morgan = require('morgan');
 const excel = require('./middlewares/excel-processing');
 const passport = require('passport');
 const flash = require('connect-flash');
-const passportSocketIo = require("passport.socketio");
+const passportSocketIo = require('passport.socketio');
 const MySQLStore = require('connect-mysql')(session);
 const options = {
     config: {
@@ -16,7 +16,7 @@ const options = {
         database: 'my_db'
     }
 };
-const Server = require("http").Server;
+const Server = require('http').Server;
 
 app = express(); // Express instance created!
 server = Server(app);
@@ -41,7 +41,7 @@ const config = {
 app.use(session(config)); // session secret
 io.use(passportSocketIo.authorize(config));
 
-app.use("/js", express.static(__dirname + '/public/js'));
+app.use('/js', express.static(__dirname + '/public/js'));
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
@@ -50,7 +50,7 @@ app.use(flash()); // use connect-flash for flash messages stored in session
 require('./app/routes.js')(app, passport, excel);
 require('./app/socket.js')(io);
 
-const port = "8080";
+const port = '8080';
 server.listen(port);
 
-console.log("Run on " + port + " port");
+console.log('Run on ' + port + ' port');

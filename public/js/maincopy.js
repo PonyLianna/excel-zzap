@@ -1,6 +1,6 @@
 $(document).ready(function() {
 
-//$("button#send").click(function(e){
+//$('button#send').click(function(e){
 $('#form').submit(function(e){
     e.preventDefault();
 //    var data = new FormData();
@@ -32,9 +32,9 @@ $('#form').submit(function(e){
                 '<div>'+ answer +'</div>');
             },
             error: function (answer) {
-                $('div#info').html("<p>Error</p>");
+                $('div#info').html('<p>Error</p>');
                 console.log(answer);
-                alert("Fail");
+                alert('Fail');
             }
         });
     });

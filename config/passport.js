@@ -4,7 +4,7 @@ const sql = require('./../middlewares/database');
 const mysql = require('mysql');
 
 // load up the user model
-sql.config.database = "my_db";
+sql.config.database = 'my_db';
 const connection = mysql.createConnection(sql.config);
 // expose this function to our app using module.exports
 module.exports = function (passport) {
@@ -17,7 +17,7 @@ module.exports = function (passport) {
 
     // used to deserialize the user
     passport.deserializeUser(function (id, done) {
-        connection.query("SELECT * FROM users WHERE id = ? ", [id], function (err, rows) {
+        connection.query('SELECT * FROM users WHERE id = ? ', [id], function (err, rows) {
             console.log('deserialize');
             done(err, rows[0]);
         });
@@ -38,7 +38,7 @@ module.exports = function (passport) {
                 passReqToCallback: true // allows us to pass back the entire request to the callback
             },
             function (req, username, password, done) { // callback with email and password from our form
-                connection.query("SELECT * FROM users WHERE Имя = ?", [username], function (err, rows) {
+                connection.query('SELECT * FROM users WHERE Имя = ?', [username], function (err, rows) {
                     if (err) return done(err);
 
                     if (!rows.length) {
@@ -48,7 +48,7 @@ module.exports = function (passport) {
 
                     // if the user is found but the password is wrong
                     if (password != rows[0].Пароль) {
-                        console.log(password + ": " + rows[0].Пароль);
+                        console.log(password + ': ' + rows[0].Пароль);
                         console.log('Wrong password!');
                         return done(null, false); // create the loginMessage and save it to session as flashdata
                     }
