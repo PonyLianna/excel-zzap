@@ -17,22 +17,26 @@ exports.GetSearchSuggestV2 = function (id, partnumber, class_man) {
             'location': 1,
             'row_count': 200,
             'type_request': 0,
-            'api_key': 'EAAAAGcMj3f9waDUKHTi2xCji/5Kv5ulafRPJHEoByJSNU9AZrUvWrHDK66VuMIKQSuKNg=='
+            'api_key': ''
         }
     };
-    request(options, function (error, response, body) {
+
+    request(options, async function (error, response) {
         if (error) throw error;
 
         const parsed = JSON.parse(response.body.d).table;
-        // console.log(parsed.table[1]);
-        parsed.forEach(function (table) {
-            try {
-                mysql.addCodecat([global_id, table.code_cat]);
-                mysql.addNewSeller([table.class_user, global_partnumber, table.price.replace('р.', '').replace(' ', '')]);
-            } catch (err) {
-                console.log('ID ' + global_id + ' is empty!');
-            }
-        });
+        try {
+            mysql.addCodecat([global_id, parsed[0].code_cat]);
+            parsed.forEach(async function (table) {
+                if (table.local == 1) {
+                    await mysql.addNewSeller([table.class_user, global_partnumber, table.price.replace('р.', '').replace(' ', '')]);
+                } else {
+                    console.log(table.class_user + ' is non-local!');
+                }
+            })
+        } catch (err) {
+            await mysql.addEmpty([global_id, global_partnumber]);
+            console.log('ID ' + global_id + ' is empty!');
+        }
     });
-
 };

@@ -32,10 +32,9 @@ exports.read = function () {
 };
 
 exports.csv = function () {
-    excel = xlsx.readFile('./uploads/test2.xlsx');
+    excel = xlsx.readFile('./uploads/test.xls');
     console.log('Reading is successful');
     let sheet_name_list = excel.SheetNames;
     stream = xlsx.stream.to_csv(excel.Sheets[sheet_name_list[0]]);
-    console.log(stream);
-    stream.pipe(fs.createWriteStream('./uploads/test2.csv'));
+    stream.pipe(fs.createWriteStream('./uploads/test.csv'));
 };
