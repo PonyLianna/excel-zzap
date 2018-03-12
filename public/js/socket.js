@@ -1,4 +1,4 @@
-let token = sessionStorage.token;
+// let token = sessionStorage.token;
 let socket = io.connect('http://localhost:8080');
 
 socket.on('connect', function () {

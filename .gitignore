@@ -1,4 +1,6 @@
 /node_modules
 key
 package-lock.json
-/uploads/
+/uploads
+/final
+/public/js/zzap.js

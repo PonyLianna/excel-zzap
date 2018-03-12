@@ -1,6 +1,13 @@
 const zipzap = require('./../config/zipzap');
-const mysql = require('./../middlewares/database');
-const my_async = require('async');
+const mysql = require('./../middlewares/database/database');
+
+async function asyncForEach(array, callback) {
+    for (let index = 0; index < array.length; index++) {
+        await callback(array[index], index, array)
+    }
+}
+
+const waitFor = (ms) => new Promise(r => setTimeout(r, ms));
 
 test();
 
@@ -8,27 +15,20 @@ function test() {
     mysql.getAllProductsLarge().then(function (products) {
         let time = (products.length * 3);
         console.log('Общее время выполнения: ' + time + ' секунд');
-        my_async.eachSeries(products, function (product, callback) {
-            try {
-                setTimeout(async function () {
-                    await request(product.id, product.Артикул, product.Производитель);
-                    callback();
-                }, 3500);
-            } catch (err) {
-                console.log('Error! But continue!');
-                test();
-            }
+        asyncForEach(products, async function (product) {
+            await waitFor(3100);
+            await request(product.id, product.Артикул, product.Производитель);
         });
     });
 }
 
-function request(id, partnumber, class_man) {
-    let promise = new Promise((resolve, reject) => {
-        zipzap.GetSearchSuggestV2(id, partnumber, class_man);
-        console.log(id + ' ' + class_man + ' ' + partnumber);
-        resolve();
-    });
-    return promise;
-
+async function request(id, partnumber, class_man) {
+    await zipzap.GetSearchSuggestV2(id, partnumber, class_man).then(
+        console.log(id + ' ' + class_man + ' ' + partnumber)
+    )
+        .catch(function (error) {
+            console.log(error + ' but continue!');
+            test();
+        });
 }
 

@@ -46,6 +46,7 @@
     "destroyExcel": "node ./scripts/destroyExcel.js",
     "refresh": "node ./scripts/refresh.js",
     "recreate": "npm run destroyEverything && npm run configure && npm run csv && npm run adminUser",
+    "create": "npm run configure && npm run csv && npm run adminUser",
     "convert": "node ./scripts/convert.js",
     "csv": "node ./scripts/paste.js",
     "adminUser": "node ./scripts/createTest.js",
@@ -54,7 +55,11 @@
     "getSearchSuggestV2": "node ./scripts/getSearchResult.js",
     "codecat": "node ./scripts/codecat.js",
     "findPrices": "node ./scripts/findPrices.js",
-    "findLast": "node ./scripts/findLast.js"
+    "findLast": "node ./scripts/findLast.js",
+    "export": "node ./scripts/export.js",
+    "selectSeller": "node ./scripts/selectSeller.js",
+    "selectSellers": "node ./scripts/selectSellers.js",
+    "exportSellers": "node ./scripts/exportSellers.js"
   },
   "author": "PonyLianna",
   "license": "ISC",

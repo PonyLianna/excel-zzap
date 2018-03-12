@@ -1,3 +1,3 @@
 const excel = require('./../middlewares/excel-processing');
 
-excel.csv();
+excel.csv('test3.xlsx','test.csv');

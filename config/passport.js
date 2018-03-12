@@ -1,6 +1,6 @@
 // load all the things we need
 const LocalStrategy = require('passport-local').Strategy;
-const sql = require('./../middlewares/database');
+const sql = require('./../middlewares/database/database');
 const mysql = require('mysql');
 
 // load up the user model

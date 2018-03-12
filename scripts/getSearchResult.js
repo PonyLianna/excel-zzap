@@ -1,5 +1,5 @@
 const zipzap = require('./../config/zipzap');
-const mysql = require('./../middlewares/database');
+const mysql = require('./../middlewares/database/database');
 
 mysql.getAllProducts().then(function (res) {
     const number = 900;

@@ -1,3 +1,3 @@
-const mysql = require('./../middlewares/database');
+const mysql = require('./../middlewares/database/database');
 
 mysql.getUsers();
