@@ -35,8 +35,8 @@ function create_database() {
 
 function setConnections() {
     const connection = mysql.createConnection(config);
-    connection.query('set global max_connections = 300', function () {
-        console.log('Max connection SET 300');
+    connection.query('set global max_connections = 1000', function () {
+        console.log('Max connection SET 1000');
         connection.end();
     });
 }
@@ -71,9 +71,9 @@ exports.destroy = function (my_table) {
     });
 };
 
-exports.db_csv = function () {
+exports.db_csv = function (filename) {
     config.flags = 'LOCAL_FILES';
-    const sql = "LOAD DATA INFILE '" + (__dirname + "/../..").replace(/\\/g, "/") + "/uploads/test.csv' " +
+    const sql = "LOAD DATA INFILE '" + (__dirname + "/../..").replace(/\\/g, "/") + "/uploads/" + filename + "' " +
         "INTO TABLE excel " +
         "CHARACTER SET UTF8 " +
         "FIELDS TERMINATED BY ',' " +

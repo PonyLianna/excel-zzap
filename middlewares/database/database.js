@@ -1,8 +1,11 @@
 const mysql = require('mysql');
-const config = require('../../config/db').pool_config;
+const config = require('../../config/db').config;
 
 let pool = mysql.createPool(config);
 exports.config = config;
+
+const waitFor = (ms) => new Promise(r => setTimeout(r, ms));
+
 
 
 exports.getUsers = function () {
@@ -142,31 +145,28 @@ exports.findLast = function () {
 
 exports.selectAll = function () {
     const excel_sql = 'SELECT * FROM excel';
-    let promise = new Promise((resolve, reject) => {
-        pool.getConnection(function (err, connection) {
+    let promise = new Promise(async function (resolve, reject) {
+        await waitFor(2000);
+        pool.query(excel_sql, function (err, result) {
             if (err) throw err;
-            connection.query(excel_sql, function (err, result) {
-                if (err) throw err;
-                resolve(result);
-            })
+            resolve(result);
         })
     });
     return promise;
 };
 
-exports.selectSeller = function (codename) { // Артикул
+exports.selectSeller = async function (codename) { // Артикул
     const excel_sql = 'SELECT Продавец, Цена FROM sellers WHERE Артикул = ?';
-    let promise = new Promise((resolve, reject) => {
-        pool.getConnection(function (err, connection) {
+    let promise = new Promise(async (resolve, reject) => {
+        await waitFor(2000);
+        pool.query(excel_sql, [codename], function (err, result) {
             if (err) throw err;
-            connection.query(excel_sql, [codename], function (err, result) {
-                if (err) throw err;
-                resolve(result);
-            })
+            resolve(result);
         })
     });
     return promise;
 };
+
 
 exports.selectSellers = function () {
     const excel_sql = 'SELECT DISTINCT(Продавец) FROM sellers';
@@ -181,4 +181,20 @@ exports.selectSellers = function () {
     });
     return promise;
 };
+
+exports.returnSellers = function () {
+    const excel_sql = "call users();";
+    console.log(excel_sql);
+    let promise = new Promise((resolve, reject) => {
+        pool.getConnection(function (err, connection) {
+            if (err) throw err;
+            connection.query(excel_sql, function (err, result) {
+                if (err) throw err;
+                resolve(result);
+            })
+        })
+    });
+    return promise;
+};
+
 

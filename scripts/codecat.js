@@ -16,19 +16,20 @@ function test() {
         let time = (products.length * 3);
         console.log('Общее время выполнения: ' + time + ' секунд');
         asyncForEach(products, async function (product) {
-            await waitFor(3100);
+            await waitFor(3500);
             await request(product.id, product.Артикул, product.Производитель);
         });
     });
 }
 
 async function request(id, partnumber, class_man) {
-    await zipzap.GetSearchSuggestV2(id, partnumber, class_man).then(
-        console.log(id + ' ' + class_man + ' ' + partnumber)
-    )
-        .catch(function (error) {
-            console.log(error + ' but continue!');
-            test();
-        });
+    try {
+        await zipzap.GetSearchSuggestV2(id, partnumber, class_man);
+    } catch(error) {
+        console.log(error + ' but continue!');
+        return;
+        test();
+    }
+    console.log(id + ' ' + class_man + ' ' + partnumber);
 }
 
