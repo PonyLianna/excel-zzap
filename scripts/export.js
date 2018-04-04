@@ -22,7 +22,7 @@ async function save (name, filename, info) {
 }
 
 const name = "sheetjs";
-const filename = "./final/finalwithsellers.xlsx";
+const filename = "./final/finalwithsellers1.xlsx";
 
 async function test(){
     let data = await read();
@@ -37,7 +37,7 @@ async function read() {
         let processed = 0;
 
         asyncForEach(zero, async function(value, i){
-            waitFor(100);
+            waitFor(10);
             let seller = await mysql.selectSeller(value.Артикул);
             await seller.forEach(function (value) {
                 let sell = value.Продавец;

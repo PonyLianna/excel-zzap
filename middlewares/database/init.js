@@ -25,10 +25,12 @@ function create_database() {
             connection.end();
             setConnections();
             create_table('excel', excelColumn);
+            create_table('pre_excel', excelColumn);
             create_table('users', usersColumn);
             create_table('sellers', sellersColumn);
-            create_table('empty', emptyCodecat);
+            create_table('pre_sellers', sellersColumn);
             create_table('temp', temp);
+            create_table('empty', emptyCodecat);
         });
     });
 }
@@ -71,21 +73,24 @@ exports.destroy = function (my_table) {
     });
 };
 
-exports.db_csv = function (filename) {
-    config.flags = 'LOCAL_FILES';
-    const sql = "LOAD DATA INFILE '" + (__dirname + "/../..").replace(/\\/g, "/") + "/uploads/" + filename + "' " +
-        "INTO TABLE excel " +
-        "CHARACTER SET UTF8 " +
-        "FIELDS TERMINATED BY ',' " +
-        "ENCLOSED BY '\"' " +
-        "LINES TERMINATED BY '\\n' " +
-        "IGNORE 1 ROWS (Производитель,Артикул,Наименование) ";
-    const connection = mysql.createConnection(config);
-    connection.connect(function (err) {
-        if (err) throw err;
-        connection.query(sql, function (err) {
+exports.db_csv = function (filename, tablename) {
+    return new Promise ((resolve, reject)=> {
+        config.flags = 'LOCAL_FILES';
+        const sql = "LOAD DATA INFILE '" + (__dirname + "/../..").replace(/\\/g, "/") + "/uploads/" + filename + "' " +
+            "INTO TABLE "+ tablename +
+            " CHARACTER SET UTF8 " +
+            "FIELDS TERMINATED BY ',' " +
+            "ENCLOSED BY '\"' " +
+            "LINES TERMINATED BY '\\n' " +
+            "IGNORE 1 ROWS (Производитель,Артикул,Наименование) ";
+        const connection = mysql.createConnection(config);
+        connection.connect(function (err) {
             if (err) throw err;
-            connection.end();
+            connection.query(sql, function (err) {
+                if (err) throw err;
+                connection.end();
+                resolve();
+            });
         });
     });
 };

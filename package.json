@@ -60,7 +60,8 @@
     "export": "node ./scripts/export.js",
     "selectSeller": "node ./scripts/selectSeller.js",
     "selectSellers": "node ./scripts/selectSellers.js",
-    "exportSellers": "node ./scripts/exportSellers.js"
+    "exportSellers": "node ./scripts/exportSellers.js",
+    "codecatMiddle": "node ./scripts/codecatMiddle.js"
   },
   "author": "PonyLianna",
   "license": "ISC",

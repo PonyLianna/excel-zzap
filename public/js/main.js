@@ -14,4 +14,10 @@ $(document).ready(function() {
                 }
         });
     });
+
+    $('#time').click(function (e) {
+        e.preventDefault();
+        console.log($('.datepicker').val());
+        console.log($('.timepicker').val());
+    })
 });

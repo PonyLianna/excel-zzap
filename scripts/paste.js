@@ -1,3 +1,3 @@
 const mysql = require('./../middlewares/database/init');
 
-products = mysql.db_csv("test2.csv");
+products = mysql.db_csv("null.csv", "excel");

@@ -12,7 +12,7 @@ socket.on('message', function (data) {
     $('#info').append('<p>' + data + '</p>');
 });
 
-$('#textbutton').click(function () {
+$('#buttontext').click(function () {
     const message = $('#text').val();
     socket.emit('answer', message);
 });

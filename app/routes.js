@@ -1,4 +1,10 @@
-module.exports = function (app, passport, excel) {
+const myfile = require('../middlewares/fileUpload');
+const excel = require('../middlewares/excelProcessing');
+const mysql = require('../middlewares/database/init');
+const database = require('../middlewares/database/database');
+const codecat = require('../middlewares/codecat');
+
+module.exports = function (app, passport) {
     // =====================================
     // HOME PAGE ===========================
     // =====================================
@@ -6,8 +12,23 @@ module.exports = function (app, passport, excel) {
 
         res.sendFile('index.html', {root: './public'});
         // const time = Date.now().toString(); // What is time now?
+
+        console.log('something int');
         // excel.read(time);
         // res.end('Success!');
+    });
+
+    app.post('/', isLoggedIn, async function (req, res) {
+        database.cleanTables();
+
+        const time = Date.now().toString();
+        const filename = await myfile.upload_read(req, res, time);
+        res.end('File has uploaded');
+        await excel.csv(filename, time + '.csv');
+        await mysql.db_csv(time + '.csv', 'pre_excel');
+        await codecat.codecat('pre_excel', 'pre_sellers');
+        await database.insertTable();
+        await database.findPrices();
     });
 
     // =====================================

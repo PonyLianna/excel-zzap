@@ -6,7 +6,18 @@ exports.config = config;
 
 const waitFor = (ms) => new Promise(r => setTimeout(r, ms));
 
-
+let queryFunction = function (sql) {
+    return new Promise((resolve, reject) => {
+        pool.getConnection(function (err, connection) {
+            if (err) throw err;
+            connection.query(sql, function (err, result, fields) {
+                if (err) throw err;
+                connection.release();
+                resolve(result);
+            });
+        });
+    });
+};
 
 exports.getUsers = function () {
     const sql = 'SELECT имя, пароль FROM users';
@@ -35,52 +46,48 @@ exports.getAllProducts = function () {
     return promise;
 };
 
-exports.getAllProductsLarge = async function () {
+exports.getAllProductsLarge = async function (table) {
     const last = await exports.findLast();
-    const sql = 'SELECT id, Производитель, Артикул FROM excel WHERE id >=' + last;
+    const sql = 'SELECT id, Производитель, Артикул FROM ' + table + ' WHERE id >=' + last;
     let promise = new Promise((resolve, reject) => {
-        pool.getConnection(function (err, connection) {
+        pool.query(sql, function (err, rows, fields) {
             if (err) throw err;
-            connection.query(sql, function (err, result, fields) {
-                if (err) throw err;
-                connection.release();
-                resolve(result);
-            });
+            resolve(rows);
         });
     });
     return promise;
 };
 
-exports.addNewSeller = function (data) {
-    const table = 'sellers';
+
+exports.addNewSeller = function (data, sellersTable) {
     data = [data];
-    const sql = 'INSERT INTO ' + table + '(Продавец,Артикул,Цена) VALUES ?';
+    const sql = 'INSERT INTO ' + sellersTable + '(Продавец,Артикул,Цена) VALUES ?';
     let promise = new Promise((resolve, reject) => {
         pool.getConnection(function (err, connection) {
             if (err) throw err;
-            connection.query(sql, [data], function (err) {
+            connection.query(sql, [data], async function (err) {
                 if (err) throw err;
-                console.log('Added new Seller ' + data);
+                await console.log('Added new Seller ' + data);
+                await resolve();
                 connection.release();
-                resolve();
             });
         });
     });
     return promise;
 };
 
-exports.addCodecat = function (data) {
-    const table = 'excel';
-    const sql = 'UPDATE ' + table + ' SET code_cat=' + data[1] + ' WHERE id=' + data[0];
+exports.addCodecat = async function (data, excelTable) {
+    // const table = 'excel';
+    const sql = 'UPDATE ' + excelTable + ' SET code_cat=' + data[1] + ' WHERE id=' + data[0];
     console.log(sql);
-    pool.getConnection(function (err, connection) {
+    await pool.getConnection(function (err, connection) {
         if (err) throw err;
-        connection.query(sql, function (err) {
+        connection.query(sql, async function (err) {
             if (err) throw err;
+            await console.log('ID ' + data[0] + ' code_cat ' + data[1]);
             connection.release();
-            console.log('ID ' + data[0] + ' code_cat ' + data[1]);
         });
-    })
+    });
 };
 
 exports.findPrices = function () {
@@ -112,11 +119,11 @@ exports.addEmpty = function (data) {
     let promise = new Promise((resolve, reject) => {
         pool.getConnection(function (err, connection) {
             if (err) throw err;
-            connection.query(sql, [data], function (err) {
+            connection.query(sql, [data], async function (err) {
                 if (err) throw err;
                 console.log('Added Empty code ' + data);
+                await resolve();
                 connection.release();
-                resolve();
             });
         });
     });
@@ -126,18 +133,16 @@ exports.addEmpty = function (data) {
 exports.findLast = function () {
     const sql = "SELECT GREATEST((SELECT MAX(id) FROM empty),(SELECT MAX(id) FROM excel WHERE code_cat IS NOT NULL))";
     let promise = new Promise((resolve, reject) => {
-        pool.getConnection(function (err, connection) {
+        pool.query(sql, function (err, results, fields) {
             if (err) throw err;
-            connection.query(sql, function (err, results, fields) {
-                if (err) throw err;
-                const result = results[0][Object.keys(results[0])];
-                console.log("Finded " + result);
-                if (!result) {
-                    resolve(1);
-                } else {
-                    resolve(result);
-                }
-            });
+
+            const result = results[0][Object.keys(results[0])];
+            console.log("Finded " + result);
+            if (!result) {
+                resolve(1);
+            } else {
+                resolve(result);
+            }
         });
     });
     return promise;
@@ -158,7 +163,7 @@ exports.selectAll = function () {
 exports.selectSeller = async function (codename) { // Артикул
     const excel_sql = 'SELECT Продавец, Цена FROM sellers WHERE Артикул = ?';
     let promise = new Promise(async (resolve, reject) => {
-        await waitFor(2000);
+        await waitFor(10);
         pool.query(excel_sql, [codename], function (err, result) {
             if (err) throw err;
             resolve(result);
@@ -166,7 +171,6 @@ exports.selectSeller = async function (codename) { // Артикул
     });
     return promise;
 };
-
 
 exports.selectSellers = function () {
     const excel_sql = 'SELECT DISTINCT(Продавец) FROM sellers';
@@ -197,4 +201,36 @@ exports.returnSellers = function () {
     return promise;
 };
 
+exports.insertTable = async function () {
+    return new Promise(async (resolve, reject) => {
+        await queryFunction('INSERT INTO excel(Производитель, Артикул, Наименование, code_cat, ' +
+            'Минимальная_цена, Средняя_цена, Максимальная_цена) SELECT Производитель, Артикул, ' +
+            'Наименование, code_cat, Минимальная_цена, Средняя_цена, Максимальная_цена FROM pre_excel');
+        await queryFunction('INSERT INTO sellers(Продавец, Артикул, Цена) SELECT Продавец, ' +
+            'Артикул, Цена FROM pre_sellers');
+        resolve();
+    });
+};
 
+exports.cleanTables = async function () {
+    return new Promise(async (resolve, reject) => {
+        await queryFunction('TRUNCATE TABLE pre_excel');
+        await queryFunction('TRUNCATE TABLE pre_sellers');
+        await queryFunction('TRUNCATE TABLE empty');
+        await console.log('Empty');
+        resolve();
+    });
+};
+
+exports.end = function () {
+    pool.end();
+};
+
+exports.test = function() {
+    pool.query('select * from pre_excel;', function(err, rows, fields){
+        if (err) throw err;
+        console.log('successful');
+        console.log(rows);
+        pool.end();
+    })
+};

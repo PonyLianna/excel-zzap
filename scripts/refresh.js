@@ -1,3 +1,3 @@
-const excel = require('./../middlewares/excel-processing');
+const excel = require('./../middlewares/excelProcessing');
 
 excel.read();
