@@ -24,8 +24,9 @@
     "morgan": "^1.9.0",
     "multer": "^1.3.0",
     "mysql": "^2.15.0",
+    "node-schedule": "^1.3.0",
     "node-xlsx": "^0.11.2",
-    "nodemailer": "^4.6.3",
+    "nodemailer": "^4.6.4",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
     "passport.socketio": "^3.7.0",
@@ -61,7 +62,9 @@
     "selectSeller": "node ./scripts/selectSeller.js",
     "selectSellers": "node ./scripts/selectSellers.js",
     "exportSellers": "node ./scripts/exportSellers.js",
-    "codecatMiddle": "node ./scripts/codecatMiddle.js"
+    "codecatMiddle": "node ./scripts/codecatMiddle.js",
+    "sendMail": "node ./scripts/sendMail.js",
+    "addCron": "node ./scripts/addCron.js"
   },
   "author": "PonyLianna",
   "license": "ISC",

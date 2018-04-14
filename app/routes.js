@@ -3,44 +3,38 @@ const excel = require('../middlewares/excelProcessing');
 const mysql = require('../middlewares/database/init');
 const database = require('../middlewares/database/database');
 const codecat = require('../middlewares/codecat');
+const email = require('../middlewares/postman');
+const dataProcessing = require('../middlewares/dataProcessing');
+const cron = require('../middlewares/cron');
+
+const waitFor = (ms) => new Promise(r => setTimeout(r, ms));
 
 module.exports = function (app, passport) {
-    // =====================================
-    // HOME PAGE ===========================
-    // =====================================
+    cron.init();
+    // Home page
     app.get('/', isLoggedIn, function (req, res) {
-
         res.sendFile('index.html', {root: './public'});
-        // const time = Date.now().toString(); // What is time now?
-
-        console.log('something int');
-        // excel.read(time);
-        // res.end('Success!');
     });
 
     app.post('/', isLoggedIn, async function (req, res) {
-        database.cleanTables();
-
+        await database.cleanTables();
         const time = Date.now().toString();
-        const filename = await myfile.upload_read(req, res, time);
+        const filename = await myfile.readExcel(req, res, time);
         res.end('File has uploaded');
         await excel.csv(filename, time + '.csv');
+        await waitFor(4000);
         await mysql.db_csv(time + '.csv', 'pre_excel');
+        await waitFor(4000);
         await codecat.codecat('pre_excel', 'pre_sellers');
         await database.insertTable();
         await database.findPrices();
+        await dataProcessing.export();
     });
 
-    // =====================================
-    // ADMIN ===============================
-    // =====================================
     app.get('/admin', isAdmin, function (req, res) {
         console.log('YOU\'RE ADMIN!');
     });
 
-    // =====================================
-    // LOGIN ===============================
-    // =====================================
     app.get('/login', function (req, res) {
         res.sendFile('login.html', {root: './public'});
     });
@@ -62,9 +56,6 @@ module.exports = function (app, passport) {
             res.redirect('/login');
         });
 
-    // =====================================
-    // LOGOUT ==============================
-    // =====================================
     app.get('/logout', function (req, res) {
         req.logout();
         res.redirect('/login');

@@ -5,9 +5,11 @@ const excelColumn = '(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,' +
     'Производитель VARCHAR(20), Артикул VARCHAR(100), Наименование VARCHAR(255), code_cat VARCHAR(20),' +
     'Минимальная_цена DECIMAL(10,2), Средняя_цена DECIMAL(10,2), Максимальная_цена DECIMAL(10,2))';
 const usersColumn = '(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, Имя VARCHAR(100) UNIQUE, Пароль VARCHAR(100), super TINYINT(1) ZEROFILL)';
-const sellersColumn = '(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, Продавец VARCHAR(255), Артикул VARCHAR(100), Цена DECIMAL(10,2))';
+const sellersColumn = '(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, Продавец VARCHAR(255), Артикул VARCHAR(100), Цена DECIMAL(10,2),' +
+    ' instock TINYINT(1), wholesale TINYINT(1))';
 const emptyCodecat = '(id INT NOT NULL, Артикул VARCHAR(100))';
 const temp = '(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, Производитель VARCHAR(20), Артикул VARCHAR(100), Наименование VARCHAR(255))';
+const times = '(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, time VARCHAR(20))';
 let database = 'my_db';
 
 exports.configure = function () {
@@ -26,11 +28,17 @@ function create_database() {
             setConnections();
             create_table('excel', excelColumn);
             create_table('pre_excel', excelColumn);
+            create_table('temp_excel', excelColumn);
+
             create_table('users', usersColumn);
             create_table('sellers', sellersColumn);
             create_table('pre_sellers', sellersColumn);
             create_table('temp', temp);
+
             create_table('empty', emptyCodecat);
+            create_table('pre_empty', emptyCodecat);
+
+            create_table('times', times);
         });
     });
 }
@@ -74,7 +82,8 @@ exports.destroy = function (my_table) {
 };
 
 exports.db_csv = function (filename, tablename) {
-    return new Promise ((resolve, reject)=> {
+    return new Promise (async (resolve, reject) => {
+        console.log('db_csv');
         config.flags = 'LOCAL_FILES';
         const sql = "LOAD DATA INFILE '" + (__dirname + "/../..").replace(/\\/g, "/") + "/uploads/" + filename + "' " +
             "INTO TABLE "+ tablename +
@@ -83,13 +92,14 @@ exports.db_csv = function (filename, tablename) {
             "ENCLOSED BY '\"' " +
             "LINES TERMINATED BY '\\n' " +
             "IGNORE 1 ROWS (Производитель,Артикул,Наименование) ";
-        const connection = mysql.createConnection(config);
-        connection.connect(function (err) {
+        const connection = await mysql.createConnection(config);
+        await connection.connect(async function (err) {
             if (err) throw err;
-            connection.query(sql, function (err) {
+            await connection.query(sql, function (err, result, fields) {
                 if (err) throw err;
-                connection.end();
+                console.log(result);
                 resolve();
+                connection.end();
             });
         });
     });

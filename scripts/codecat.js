@@ -2,7 +2,7 @@
 // const mysql = require('./../middlewares/database/database');
 const codecat = require('./../middlewares/codecat');
 
-codecat.codecat('pre_excel', 'pre_sellers');
+codecat.codecatFilter('pre_excel', 'pre_sellers');
 // async function asyncForEach(array, callback) {
 //     for (let index = 0; index < array.length; index++) {
 //         await callback(array[index], index, array)

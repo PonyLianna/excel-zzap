@@ -8,6 +8,7 @@ const passport = require('passport');
 const flash = require('connect-flash');
 const passportSocketIo = require('passport.socketio');
 const MySQLStore = require('connect-mysql')(session);
+
 const options = {
     config: {
         user: 'root',
@@ -15,6 +16,7 @@ const options = {
         database: 'my_db'
     }
 };
+
 const Server = require('http').Server;
 
 app = express(); // Express instance created!
@@ -28,6 +30,7 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 app.use(bodyParser.json());
+
 // required for passport
 const config = {
     cookieParser: require('cookie-parser'),
@@ -41,10 +44,10 @@ app.use(session(config)); // session secret
 io.use(passportSocketIo.authorize(config));
 
 app.use('/js', express.static(__dirname + '/public/js'));
+app.use('/css', express.static(__dirname + '/public/css'));
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
-
 
 require('./app/routes.js')(app, passport);
 require('./app/socket.js')(io);

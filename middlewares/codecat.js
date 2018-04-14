@@ -1,5 +1,6 @@
 const zipzap = require('./../config/zipzap');
 const mysql = require('./database/database');
+const fs = require('fs');
 
 async function asyncForEach(array, callback) {
     for (let index = 0; index < array.length; index++) {
@@ -7,18 +8,20 @@ async function asyncForEach(array, callback) {
     }
 }
 
-// function getRandomInt(max) {
-//     return Math.floor(Math.random() * Math.floor(max));
-// }
-
+let errCounter = 0;
 const waitFor = (ms) => new Promise(r => setTimeout(r, ms));
 
 function request(id, partnumber, class_man, excelTable, sellersTable) {
     return new Promise(async function (resolve, reject) {
         console.log(id + ' ' + class_man + ' ' + partnumber);
-        await zipzap.GetSearchSuggestV2(id, partnumber, class_man, excelTable, sellersTable)
+        await zipzap.GetSearchResultV2(id, partnumber, class_man, excelTable, sellersTable)
             .catch((err) => {
-                console.log('Ohh fuck');
+                console.log(errCounter);
+                errCounter += 1;
+                fs.appendFile('log.txt', err + "\n" + errCounter + "\n", function (err) {
+                    if (err) throw err;
+                    console.log('Saved!');
+                });
                 return new Error(err);
             });
         return resolve();
@@ -28,36 +31,30 @@ function request(id, partnumber, class_man, excelTable, sellersTable) {
 
 exports.codecat = function (excelTable, sellersTable) {
     return new Promise(async (resolve, reject) => {
-        await mysql.getAllProductsLarge(excelTable).then(async function (products) {
-            let time = (products.length * 3);
+        mysql.getAllProducts(excelTable).then(async function (products) {
+            let time = (products.length * 3.4);
             console.log('Общее время выполнения: ' + time + ' секунд');
-
-            asyncForEach(products, async function (product) {
-                await waitFor(3200);
-                request(product.id, product.Артикул, product.Производитель, excelTable, sellersTable)
-                    .catch((err) => {
-                        console.log('Error, but continue');
-                        console.log(err);
-                    });
-            // })
-                // .catch(async (err) => {
-                // console.log('nextlvl');
-                // console.log(err + ' but continue!');
-                // await waitFor(4000);
-                // test();
-                // return;
-                // // }).then(async function () {
-                // //     await waitFor(3200);
-                // //     console.log("end");
-                // //     mysql.end();
-                // //
-                // //     return resolve();
-            }).then(function () {
-                resolve();
-                console.log('test');
+            await asyncForEach(products, async function (product) {
+                    await waitFor(3400);
+                    await request(product.id, product.Артикул, product.Производитель, excelTable, sellersTable);
             });
+            await waitFor(4000);
+            resolve();
         });
-
     });
+};
 
+exports.codecatFilter = function (excelTable, sellersTable) {
+    return new Promise(async (resolve, reject) => {
+        mysql.getAllProductsLarge(excelTable).then(async function (products) {
+            let time = (products.length * 3.4);
+            console.log('Общее время выполнения: ' + time + ' секунд');
+            await asyncForEach(products, async function (product) {
+                await waitFor(3400);
+                await request(product.id, product.Артикул, product.Производитель, excelTable, sellersTable);
+            });
+            await waitFor(4000);
+            resolve();
+        });
+    });
 };

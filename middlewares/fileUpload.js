@@ -1,7 +1,7 @@
 const multer = require('multer');
 const excel = require('./excelProcessing');
 
-exports.upload_read = function (req, res, time) {
+exports.readExcel = function (req, res, time) {
     return new Promise((resolve, reject) => {
         const name = time + '.xls';
         let storage = multer.diskStorage({
@@ -21,11 +21,8 @@ exports.upload_read = function (req, res, time) {
                 return res.end('Error uploading file.');
             }
             console.log('File ' + name + ' is uploaded');
-            // excel.read(time);
             resolve(name);
-
         });
     });
-
 };
 

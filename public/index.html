@@ -7,52 +7,33 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/css/materialize.min.css">
     <!-- Compiled and minified JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
 
-<br>
-<br>
-<br>
-<div>
-    <!--<form method="post" action="www.zzap.ru" enctype="application/x-www-form-urlencoded" id="form1">-->
-    <!---->
-    <!--<textarea id="apiSearchText"></textarea>-->
-    <!--<br>-->
-    <!--<button id="apiSearch">GetRegions</button>-->
-    <!--<br>-->
-    <!--<textarea id="apiPricesText"></textarea>-->
-    <!--<br>-->
-    <!--<button id="apiPrices">GetStatPrices</button>-->
-    <!--<br>-->
-    <!--<textarea id="apiSuggestText"></textarea>-->
-    <!--<br>-->
-    <!--<button id="apiSuggest">GetSearchSuggest</button>-->
-    <!--</form>-->
-</div>
-
 <div class="container">
-
     <h3>THE PARSER</h3>
     <div class="row">
         <div class="col s4">
+            <button id="time" class="btn waves-effect waves-light modal-trigger">Timers</button>
+        </div>
 
-            <button id="time" class="btn waves-effect waves-light">Running at</button>
-        </div>
-        <div class="col s2">
-            <input type="date" class="datepicker">
-        </div>
-        <div class="col s2">
-            <input type="time" class="timepicker">
+        <div class="col s8">
+            <div class="right">
+
+                <button id="update" class="btn-small waves-effect waves-teal scale-transition scale-out">Update</button>
+                <button id="delete" class="btn-small waves-effect red darken-2 scale-transition scale-out">Delete
+                </button>
+                <button id="options" class="btn-floating waves-effect waves-light blue darken-2">
+                    <i class="material-icons">settings</i></button>
+            </div>
+
         </div>
     </div>
+
     <div class="row">
         <div class="col s6">
             <form method="post" action="/" enctype="multipart/form-data" id="form">
-                <!--<input type="file" id="excel"-->
-                <!--accept=".xls,.xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"-->
-                <!--name="excel"-->
-                <!--/>-->
-
                 <div class="file-field input-field col s10">
                     <div class="btn">
                         <span>File</span>
@@ -62,7 +43,6 @@
                     </div>
                     <div class="file-path-wrapper">
                         <input class="file-path validate" type="text" placeholder="Upload one or more files">
-
                     </div>
                 </div>
                 <div class="input-field">
@@ -70,8 +50,8 @@
                 </div>
             </form>
             <div class="col s12">
-                <p id="source">Give me excel file</p>
-
+                <!--<form method="post" action="/getParsed" enctype="multipart/form-data" id="parsed">-->
+                <!--<p id="source">Give me excel file</p>-->
                 <p>
                     <label>
                         <input type="radio" name="instock" value="0" checked/>
@@ -95,52 +75,63 @@
                 </p>
 
 
-                <label>Регион</label>
-                <select class="browser-default" id="location">
-                    <option disabled selected value>Выберите регион</option>
-                    <option value="0">Россия</option>
-                    <option value="1">Украина</option>
-                </select>
+                <!--<label>Регион</label>-->
+                <!--<select class="browser-default" id="location">-->
+                <!--<option disabled selected value>Выберите регион</option>-->
+                <!--<option value="0">Россия</option>-->
+                <!--<option value="1">Украина</option>-->
+                <!--</select>-->
 
                 <input type="email" placeholder="укажите email" id="email"/>
-                <!--<button id="send">Send!</button>-->
 
-                <button class="btn waves-effect waves-light">Send
-                </button>
+                <button class="btn waves-effect waves-light" id="parsedButton">Send</button>
+                <!--</form>-->
             </div>
         </div>
         <div class="col s6">
             <h5>Системные сообщения</h5>
-            <div id="info" style="height:300px;max-height:300px;overflow:scroll;">
-
-            </div>
-            <div>
-                <!--<input type="text" id="text"/>-->
-                <!--<button id="textbutton">Send</button>-->
-                <label for="text">Enter text</label>
-                <input type="text" id="text"/>
-                <button class="btn waves-effect waves-light" id="buttontext">Send</button>
-            </div>
+            <div id="info"></div>
         </div>
     </div>
+
+</div>
+<div id="window-invisible"></div>
+<div id="window" class="z-depth-1 grey lighten-5">
+    <br/>
+    <div class="row">
+        <div class="col s3 offset-s2">
+            <input type="text" class="datepicker">
+        </div>
+        <div class="col s3">
+            <input type="text" class="timepicker">
+        </div>
+        <div class="col s2">
+                <button id="add" class="btn waves-effect waves-light">Add</button>
+        </div>
+    </div>
+    <div class="row">
+        <ul class="collection" id="collection">
+        </ul>
+    </div>
+
 </div>
 </body>
 <script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
 <script type="text/javascript" src="js/jquery-form-3.51.min.js"></script>
+<script>
+    let options = new Object();
+    options.format = 'yyyy-mm-dd';
+    options.twelveHour = false;
+
+    const elem1 = document.querySelector('.datepicker');
+    const elem2 = document.querySelector('.timepicker');
+
+    let instance1 = M.Datepicker.init(elem1, options);
+    let instance2 = M.Timepicker.init(elem2, options);
+
+</script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
-
-<!--<script>-->
-
-    <!--var options = new Object();-->
-    <!--options.format = 'dd';-->
-    <!--var elem = document.querySelector('.datepicker');-->
-    <!--var instance = M.Datepicker.init(elem, options);-->
-
-    <!--var elem = document.querySelector('.timepicker');-->
-    <!--var instance = M.Timepicker.init(elem, options);-->
-
-
-<!--</script>-->
 <script type="text/javascript" src="js/main.js"></script>
 <script type="text/javascript" src="js/socket.js"></script>
+<link rel="stylesheet" href="css/style.css">
 </html>

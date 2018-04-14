@@ -31,8 +31,8 @@ exports.getUsers = function () {
     });
 };
 
-exports.getAllProducts = function () {
-    const sql = 'SELECT id, Производитель, Артикул FROM excel';
+exports.getAllProducts = function (table) {
+    const sql = 'SELECT id, Производитель, Артикул FROM ' + table;
     let promise = new Promise((resolve, reject) => {
         pool.getConnection(function (err, connection) {
             if (err) throw err;
@@ -47,45 +47,46 @@ exports.getAllProducts = function () {
 };
 
 exports.getAllProductsLarge = async function (table) {
-    const last = await exports.findLast();
+    const last = await exports.findLast(table);
     const sql = 'SELECT id, Производитель, Артикул FROM ' + table + ' WHERE id >=' + last;
-    let promise = new Promise((resolve, reject) => {
+    //const sql = 'SELECT id, Производитель, Артикул FROM ' + table;
+
+    return new Promise((resolve, reject) => {
         pool.query(sql, function (err, rows, fields) {
             if (err) throw err;
             resolve(rows);
         });
     });
-    return promise;
 };
-
 
 exports.addNewSeller = function (data, sellersTable) {
     data = [data];
-    const sql = 'INSERT INTO ' + sellersTable + '(Продавец,Артикул,Цена) VALUES ?';
-    let promise = new Promise((resolve, reject) => {
+    const sql = 'INSERT INTO ' + sellersTable + '(Продавец,Артикул,Цена,instock,wholesale) VALUES ?';
+    return new Promise((resolve, reject) => {
         pool.getConnection(function (err, connection) {
             if (err) throw err;
             connection.query(sql, [data], async function (err) {
                 if (err) throw err;
                 await console.log('Added new Seller ' + data);
-                await resolve();
-                connection.release();
+                await connection.release();
+                resolve();
             });
         });
     });
-    return promise;
 };
 
 exports.addCodecat = async function (data, excelTable) {
-    // const table = 'excel';
-    const sql = 'UPDATE ' + excelTable + ' SET code_cat=' + data[1] + ' WHERE id=' + data[0];
-    console.log(sql);
-    await pool.getConnection(function (err, connection) {
-        if (err) throw err;
-        connection.query(sql, async function (err) {
+    return new Promise((resolve, reject) => {
+        const sql = 'UPDATE ' + excelTable + ' SET code_cat=' + data[1] + ' WHERE id = ' + data[0];
+        console.log(sql);
+        pool.getConnection(function (err, connection) {
             if (err) throw err;
-            await console.log('ID ' + data[0] + ' code_cat ' + data[1]);
-            connection.release();
+            connection.query(sql, async function (err) {
+                if (err) throw err;
+                await console.log('ID ' + data[0] + ' code_cat ' + data[1]);
+                await connection.release();
+                resolve();
+            });
         });
     });
 };
@@ -116,22 +117,22 @@ exports.findPrices = function () {
 exports.addEmpty = function (data) {
     const table = 'empty';
     const sql = 'INSERT INTO ' + table + '(id, Артикул) VALUES (?)';
-    let promise = new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
         pool.getConnection(function (err, connection) {
             if (err) throw err;
             connection.query(sql, [data], async function (err) {
                 if (err) throw err;
                 console.log('Added Empty code ' + data);
-                await resolve();
-                connection.release();
+                await connection.release();
+                resolve();
             });
         });
     });
-    return promise;
 };
 
-exports.findLast = function () {
-    const sql = "SELECT GREATEST((SELECT MAX(id) FROM empty),(SELECT MAX(id) FROM excel WHERE code_cat IS NOT NULL))";
+exports.findLast = function (table) {
+    // const sql = "SELECT GREATEST((SELECT MAX(id) FROM empty),(SELECT MAX(id) FROM excel WHERE code_cat IS NOT NULL))";
+    const sql = "SELECT MAX(id) FROM " + table + " WHERE code_cat IS NOT NULL";
     let promise = new Promise((resolve, reject) => {
         pool.query(sql, function (err, results, fields) {
             if (err) throw err;
@@ -201,13 +202,14 @@ exports.returnSellers = function () {
     return promise;
 };
 
-exports.insertTable = async function () {
+exports.insertTable = function () {
     return new Promise(async (resolve, reject) => {
         await queryFunction('INSERT INTO excel(Производитель, Артикул, Наименование, code_cat, ' +
             'Минимальная_цена, Средняя_цена, Максимальная_цена) SELECT Производитель, Артикул, ' +
             'Наименование, code_cat, Минимальная_цена, Средняя_цена, Максимальная_цена FROM pre_excel');
         await queryFunction('INSERT INTO sellers(Продавец, Артикул, Цена) SELECT Продавец, ' +
             'Артикул, Цена FROM pre_sellers');
+        console.log('INSERTED to real');
         resolve();
     });
 };
@@ -222,15 +224,3 @@ exports.cleanTables = async function () {
     });
 };
 
-exports.end = function () {
-    pool.end();
-};
-
-exports.test = function() {
-    pool.query('select * from pre_excel;', function(err, rows, fields){
-        if (err) throw err;
-        console.log('successful');
-        console.log(rows);
-        pool.end();
-    })
-};

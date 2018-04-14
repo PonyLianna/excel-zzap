@@ -52,18 +52,6 @@ async function read() {
                 resolve(myzero);
             }
         });
-        // zero.forEach(await async function (value, i) {
-        //     let seller = await mysql.selectSeller(value.Артикул);
-        //     await seller.forEach(function (value) {
-        //         let sell = value.Продавец;
-        //         let num = value.Цена;
-        //         myzero[i][sell] = num;
-        //     });
-        //     processed++;
-        //     if (processed === zero.length){
-        //         resolve(myzero);
-        //     }
-        // });
     });
 }
 
