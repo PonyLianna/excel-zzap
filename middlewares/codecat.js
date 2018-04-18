@@ -26,7 +26,6 @@ function request(id, partnumber, class_man, excelTable, sellersTable) {
             });
         return resolve();
     });
-
 }
 
 exports.codecat = function (excelTable, sellersTable) {
@@ -35,8 +34,8 @@ exports.codecat = function (excelTable, sellersTable) {
             let time = (products.length * 3.4);
             console.log('Общее время выполнения: ' + time + ' секунд');
             await asyncForEach(products, async function (product) {
-                    await waitFor(3400);
-                    await request(product.id, product.Артикул, product.Производитель, excelTable, sellersTable);
+                await waitFor(3400);
+                await request(product.id, product.vendor_code, product.manufacturer, excelTable, sellersTable);
             });
             await waitFor(4000);
             resolve();
@@ -51,10 +50,25 @@ exports.codecatFilter = function (excelTable, sellersTable) {
             console.log('Общее время выполнения: ' + time + ' секунд');
             await asyncForEach(products, async function (product) {
                 await waitFor(3400);
-                await request(product.id, product.Артикул, product.Производитель, excelTable, sellersTable);
+                await request(product.id, product.vendor_code, product.manufacturer, excelTable, sellersTable);
             });
             await waitFor(4000);
             resolve();
         });
     });
+};
+
+exports.codecatTest = function (excelTable, sellersTable, products) {
+    return new Promise(async (resolve, reject) => {
+        // mysql.getAllProducts(excelTable).then(async function (products) {
+        let time = (products.length * 3.4);
+        console.log('Общее время выполнения: ' + time + ' секунд');
+        await asyncForEach(products, async function (product) {
+            await waitFor(3400);
+            await request(product.id, product.vendor_code, product.manufacturer, excelTable, sellersTable);
+        });
+        await waitFor(4000);
+        resolve();
+    });
+    // });
 };

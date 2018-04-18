@@ -4,8 +4,10 @@ exports.config = {
     password: ''
 };
 
+exports.db = 'my_db'; // database name
+
 pool_config = exports.config;
 pool_config.connectionLimit = 500;
-pool_config.database = 'my_db';
+pool_config.database = exports.db;
 
 exports.pool_config = pool_config;

@@ -26,9 +26,11 @@ module.exports = function (app, passport) {
         await mysql.db_csv(time + '.csv', 'pre_excel');
         await waitFor(4000);
         await codecat.codecat('pre_excel', 'pre_sellers');
-        await database.insertTable();
+        await database.insertTables();
         await database.findPrices();
-        await dataProcessing.export();
+        await dataProcessing.export(await database.selectAll());
+
+        // socket.emit('message', 'Data is here!');
     });
 
     app.get('/admin', isAdmin, function (req, res) {

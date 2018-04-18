@@ -20,7 +20,7 @@ exports.GetSearchResultV2 = function (id, partnumber, class_man, excelTable, sel
 
     return new Promise((resolve, reject) => {
         request(options, async function (err, response) {
-                // if (err) throw err;
+                if (err) throw err;
                 const parsed = JSON.parse(response.body.d).table;
                 try {
                     await mysql.addCodecat([id, parsed[0].code_cat], excelTable);

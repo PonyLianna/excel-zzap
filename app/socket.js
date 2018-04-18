@@ -1,6 +1,10 @@
 const cron = require('../middlewares/cron');
 const email = require('../middlewares/postman');
 const mysql = require('../middlewares/database/databaseSocket');
+const database = require('../middlewares/database/database');
+const manipulate = require('../middlewares/database/databaseManipulate');
+const codecat = require('../middlewares/codecat');
+const proc = require('../middlewares/dataProcessing');
 
 module.exports = function (io) {
     io.sockets.on('connection', async function (socket) {
@@ -16,9 +20,25 @@ module.exports = function (io) {
             socket.emit('message', message);
         });
 
+        socket.on('update', async function (time) {
+            await database.cleanTablesSocket();
+            await codecat.codecatTest('excel', 'sellers', await database.getAllProductsFilter());
+            await database.insertTables();
+            await database.findPrices();
+        });
+
+        socket.on('delete',async function (time) {
+            await manipulate.destroyAll();
+            await manipulate.createAll();
+            await manipulate.csv();
+            await manipulate.createUsers();
+
+            console.log('RECREATED');
+        });
+
         socket.on('time', function (message) {
             console.log('TIME IS ' + message);
-            cron.add(new Date(message));
+            cron.add(message);
             mysql.addData(message);
         });
 
@@ -29,18 +49,10 @@ module.exports = function (io) {
             mysql.delData(message);
         });
 
-        socket.on('data', function (message) {
-            function date() {
-                return new Date();
-            }
-            // function getHighestFile() {
-            //     fs.readdir('../final', (err, files) => {
-            //         files.forEach(file => {
-            //             console.log(file);
-            //         });
-            //     })
-            // }
-            email.sendMail(message.email, 'Excel ' + date(), '', __dirname + '/../final/finalwithsellers.xlsx');
+        socket.on('data', async function (message) {
+            console.log(message);
+            await proc.altExport(await database.selectAll(), message.instock, message.wholesale);
+            await email.sendMail(message.email, 'Excel ' + new Date(), '', __dirname + '/../final/final.xlsx');
         });
     });
 };

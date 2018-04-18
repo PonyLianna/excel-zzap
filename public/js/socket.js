@@ -1,11 +1,11 @@
 let socket = io.connect('http://localhost:8080');
 
-socket.on('connect', function () {
-    socket.emit('authentication', {username: 'John', password: 'secret'});
-    socket.on('authenticated', function () {
-        $('#info').append('<p>' + data + '</p>');
-    });
-});
+// socket.on('connect', function () {
+//     socket.emit('authentication', {username: 'John', password: 'secret'});
+//     socket.on('authenticated', function () {
+//         $('#info').append('<p>' + data + '</p>');
+//     });
+// });
 
 socket.on('message', function (data) {
     $('#info').append('<p>' + data + '</p>');
@@ -41,6 +41,18 @@ $('#parsedButton').click(function (e) {
     };
     socket.emit('data', data);
     console.log('Sended');
+});
+
+$('#update').click(function (e) {
+    e.preventDefault();
+    const time = new Date();
+    socket.emit('update', time);
+});
+
+$('#delete').click(function (e) {
+    e.preventDefault();
+    const time = new Date();
+    socket.emit('delete', time);
 });
 
 $(document).on('click','a.secondary-content',function(e) {
