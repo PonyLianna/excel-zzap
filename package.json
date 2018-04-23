@@ -1,7 +1,7 @@
 {
   "name": "jswork",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "start.js",
   "dependencies": {
     "body-parser": "^1.18.2",
     "connect-flash": "^0.1.1",
@@ -47,7 +47,10 @@
     "exportSellers": "node ./scripts/exportSellers.js",
     "codecatMiddle": "node ./scripts/codecatMiddle.js",
     "sendMail": "node ./scripts/sendMail.js",
-    "addCron": "node ./scripts/addCron.js"
+    "addCron": "node ./scripts/addCron.js",
+    "addUser": "node ./scripts/addUser.js",
+    "deleteUser": "node ./scripts/deleteUser.js",
+    "fixSession": "node ./scripts/fixSession.js"
   },
   "author": "PonyLianna",
   "license": "ISC",

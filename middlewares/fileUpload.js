@@ -1,15 +1,15 @@
 const multer = require('multer');
 const excel = require('./excelProcessing');
 
-exports.readExcel = function (req, res, time) {
+exports.readExcel = function (req, res) { //, time
     return new Promise((resolve, reject) => {
-        const name = time + '.xls';
+        const name = 'main.xls';
         let storage = multer.diskStorage({
             destination: function (req, file, callback) {
                 callback(null, './uploads'); // Folder where you can find files
             },
             filename: function (req, file, callback) {
-                callback(null, name); // *TIME*.xls or *TIME*.xlsx
+                callback(null, name); // *MAIN*.xls or *MAIN*.xlsx
             }
         });
 

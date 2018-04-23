@@ -9,7 +9,7 @@ const cron = require('../middlewares/cron');
 
 const waitFor = (ms) => new Promise(r => setTimeout(r, ms));
 
-module.exports = function (app, passport) {
+module.exports = function (app, passport, io) {
     cron.init();
     // Home page
     app.get('/', isLoggedIn, function (req, res) {
@@ -18,19 +18,17 @@ module.exports = function (app, passport) {
 
     app.post('/', isLoggedIn, async function (req, res) {
         await database.cleanTables();
-        const time = Date.now().toString();
-        const filename = await myfile.readExcel(req, res, time);
+        // const time = Date.now().toString();
+        const filename = await myfile.readExcel(req, res); //, time
         res.end('File has uploaded');
-        await excel.csv(filename, time + '.csv');
+        await excel.csv(filename, 'main.csv');
         await waitFor(4000);
-        await mysql.db_csv(time + '.csv', 'pre_excel');
+        await mysql.db_csv('main.csv', 'pre_excel');
         await waitFor(4000);
-        await codecat.codecat('pre_excel', 'pre_sellers');
+        await codecat.codecat('pre_excel', 'pre_sellers', io);
         await database.insertTables();
-        await database.findPrices();
+        await database.findPrices('SELECT vendor_code FROM excel WHERE code_cat IS NOT NULL AND avg_price IS NULL');
         await dataProcessing.export(await database.selectAll());
-
-        // socket.emit('message', 'Data is here!');
     });
 
     app.get('/admin', isAdmin, function (req, res) {

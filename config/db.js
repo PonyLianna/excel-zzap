@@ -1,10 +1,8 @@
-exports.config = {
-    host: 'localhost',
-    user: 'root',
-    password: ''
-};
+const config = require('./config');
 
-exports.db = 'my_db'; // database name
+exports.config = config.dbconfig;
+
+exports.db = config.dbname; // database name
 
 pool_config = exports.config;
 pool_config.connectionLimit = 500;

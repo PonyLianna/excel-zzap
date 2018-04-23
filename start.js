@@ -9,14 +9,7 @@ const flash = require('connect-flash');
 const passportSocketIo = require('passport.socketio');
 const MySQLStore = require('connect-mysql')(session);
 
-const options = {
-    config: require('./config/db').pool_config
-    // config: {
-    //     user: 'root',
-    //     password: '',
-    //     database: 'my_db'
-    // }
-};
+const options = { config: require('./config/db').pool_config };
 
 const Server = require('http').Server;
 
@@ -36,7 +29,7 @@ app.use(bodyParser.json());
 // required for passport
 const config = {
     cookieParser: require('cookie-parser'),
-    secret: 'mysecretispony',
+    secret: require('./config/config').secret,
     resave: true,
     saveUninitialized: true,
     store: new MySQLStore(options)
@@ -51,11 +44,11 @@ app.use('/css', express.static(__dirname + '/public/css'));
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
-//
-require('./app/routes.js')(app, passport);
-require('./app/socket.js')(io);
 
-const port = require('./config/port').port;
+require('./app/routes')(app, passport, io);
+require('./app/socket').main(io);
+
+const port = require('./config/config').port;
 server.listen(port);
 
 console.log('Run on ' + port + ' port');

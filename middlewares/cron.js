@@ -11,25 +11,43 @@ exports.init = async function () {
     const result = await mysql.readData();
     result.forEach(function (data) {
         max = data.id;
-        const time = new Date(data.time);
+        let time = '';
+
+        time = new Date(data.time);
+        console.log(time);
+        if (time == 'Invalid Date') {
+            time = data.time;
+            console.log('?');
+        }
+
         console.log(max);
         console.log(time);
         jobs[max] = new CronJob(time, async function () {
+            console.log('something');
             await database.cleanTablesSocket();
             await codecat.codecatTest('excel', 'sellers', await database.getAllProductsFilter());
-            await database.findPrices();
+            await database.findPrices('SELECT vendor_code FROM excel');
             await mysql.delData(await exports.find(data.time));
         }, null, true);
     });
 };
 
 exports.add = function (time) {
-    jobs[max] = new CronJob(new Date(time), async function () {
+    let newTime = '';
+    newTime = new Date(time);
+
+    if (newTime == 'Invalid Date') {
+        newTime = time;
+        console.log('?');
+    }
+
+    jobs[max] = new CronJob(newTime, async function () {
+        console.log('something');
         await database.cleanTablesSocket();
         await codecat.codecatTest('excel', 'sellers', await database.getAllProductsFilter());
-        await database.findPrices();
-        await mysql.delData(await exports.find(time));
-        console.log(await exports.find(time));
+        await database.findPrices('SELECT vendor_code FROM excel');
+        // await mysql.delData(await exports.find(time));
+        // console.log(await exports.find(time));
     }, null, true);
     max += 1;
 };

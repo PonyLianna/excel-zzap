@@ -1,7 +1,6 @@
 const zipzap = require('./../config/zipzap');
 const mysql = require('./database/database');
 const fs = require('fs');
-
 async function asyncForEach(array, callback) {
     for (let index = 0; index < array.length; index++) {
         await callback(array[index], index, array)
@@ -28,13 +27,14 @@ function request(id, partnumber, class_man, excelTable, sellersTable) {
     });
 }
 
-exports.codecat = function (excelTable, sellersTable) {
+exports.codecat = function (excelTable, sellersTable, io) {
     return new Promise(async (resolve, reject) => {
         mysql.getAllProducts(excelTable).then(async function (products) {
             let time = (products.length * 3.4);
             console.log('Общее время выполнения: ' + time + ' секунд');
-            await asyncForEach(products, async function (product) {
+            await asyncForEach(products, async function (product, index, array) {
                 await waitFor(3400);
+                require('../app/socket').log(index, array);
                 await request(product.id, product.vendor_code, product.manufacturer, excelTable, sellersTable);
             });
             await waitFor(4000);
@@ -43,13 +43,14 @@ exports.codecat = function (excelTable, sellersTable) {
     });
 };
 
-exports.codecatFilter = function (excelTable, sellersTable) {
+exports.codecatFilter = function (excelTable, sellersTable, io) {
     return new Promise(async (resolve, reject) => {
         mysql.getAllProductsLarge(excelTable).then(async function (products) {
             let time = (products.length * 3.4);
             console.log('Общее время выполнения: ' + time + ' секунд');
-            await asyncForEach(products, async function (product) {
+            await asyncForEach(products, async function (product, index, array) {
                 await waitFor(3400);
+                require('../app/socket').log(index, array);
                 await request(product.id, product.vendor_code, product.manufacturer, excelTable, sellersTable);
             });
             await waitFor(4000);
@@ -60,15 +61,14 @@ exports.codecatFilter = function (excelTable, sellersTable) {
 
 exports.codecatTest = function (excelTable, sellersTable, products) {
     return new Promise(async (resolve, reject) => {
-        // mysql.getAllProducts(excelTable).then(async function (products) {
         let time = (products.length * 3.4);
         console.log('Общее время выполнения: ' + time + ' секунд');
-        await asyncForEach(products, async function (product) {
+        await asyncForEach(products, async function (product, index, array) {
             await waitFor(3400);
+            require('../app/socket').log(index, array);
             await request(product.id, product.vendor_code, product.manufacturer, excelTable, sellersTable);
         });
         await waitFor(4000);
         resolve();
     });
-    // });
 };

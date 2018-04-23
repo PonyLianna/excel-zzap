@@ -1,4 +1,11 @@
 $(document).ready(function () {
+    $('.datepicker').click(function () {
+        if ($('#change-time').text() == 'EVERYTIME') {
+            instance1.open();
+            $('.datepicker-controls[role="heading"]').hide();
+        }
+    });
+
     $('#time').click(function () {
         $("#window").show("fast");
         $("#window-invisible").show("fast");
@@ -7,6 +14,16 @@ $(document).ready(function () {
     $('#window-invisible').click(function () {
         $("#window").hide("fast");
         $("#window-invisible").hide("fast");
+    });
+
+    $('#process').click(function () {
+        $("#preload-window").show("fast");
+        $("#preload-invisible").show("fast");
+    });
+
+    $('#preload-invisible').click(function () {
+        $("#preload-window").hide("fast");
+        $("#preload-invisible").hide("fast");
     });
 
     $('#options').click(function () {
@@ -27,5 +44,21 @@ $(document).ready(function () {
                 alert('Fail');
             }
         });
+    });
+
+    $('#change-time').click(function () {
+        $("#change-time").toggleClass('red');
+        const $e = $(this);
+        $e.text($e.text() === "EVERYTIME" ? direct() : everytime()).toggleClass("active");
+        $('.datepicker-date-display').toggle();
+
+        function direct() {
+            instance1.options.format = 'yyyy-mm-dd';
+            return "DIRECTTIME";
+        }
+        function everytime() {
+            instance1.options.format = 'dd';
+            return "EVERYTIME"
+        }
     });
 });

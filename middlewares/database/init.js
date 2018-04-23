@@ -13,26 +13,25 @@ const emptyCodecat = '(id INT NOT NULL, vendor_code VARCHAR(100))';
 const temp = '(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, manufacturer VARCHAR(20), vendor_code VARCHAR(100), name VARCHAR(255))';
 const times = '(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, time VARCHAR(20))';
 
-// const waitFor = (ms) => new Promise(r => setTimeout(r, ms));
+const waitFor = (ms) => new Promise(r => setTimeout(r, ms));
 
 exports.configure = async function () {
-    console.log('Starting!');
-    await createAll();
+        console.log('Starting!');
+        return createAll();
 };
 
-async function createAll () {
+async function createAll() {
     const sql = 'CREATE DATABASE ' + database + ' CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci';
-
     console.log(sql);
-    try{
-        await create_db(sql);
-    } catch (err) {
-        console.log(err);
-    }
 
     config.database = database;
-    setConnections();
-    return await Promise.all([
+
+    await setConnections();
+
+    return Promise.all([
+        create_db(sql).catch(function (err) {
+            console.log(err)
+        }),
         create_table('excel', excelColumn),
         create_table('pre_excel', excelColumn),
         create_table('temp_excel', excelColumn),
@@ -59,18 +58,24 @@ function create_db(sql) {
                 if (err) reject(err);
                 console.log('Database ' + database + " created");
                 resolve();
+                connection.end(); // 2 days wp
             });
         });
     });
 }
 
 function setConnections() {
-    const connection = mysql.createConnection(config);
-    connection.query('set global max_connections = 1000', function () {
-        console.log('Max connection SET 1000');
-        connection.end();
+    return new Promise(function (resolve, reject) {
+        const connection = mysql.createConnection(config);
+        connection.query('set global max_connections = 1000', function () {
+            console.log('Max connection SET 1000');
+            connection.end();
+            resolve();
+        });
     });
+
 }
+
 //
 function create_table(table, columns) {
 // exports.create_table = function (table, columns) {
@@ -142,7 +147,26 @@ exports.createUser = function (name, password, admin = '0') {
             if (err) throw err;
             connection.query(sql, [value], function (err) {
                 if (err) throw err;
-                console.log('User: ' + name + ' ' + password + ' added!');
+                //console.log('User: ' + name + ' ' + password + ' added!');
+                console.log('Successful added');
+                connection.end();
+                resolve();
+            });
+        });
+    });
+};
+
+exports.deleteUser = function (name) {
+    let value = [[name]];
+    const sql = 'DELETE FROM users WHERE name = ?';
+    return new Promise((resolve, reject) => {
+        const connection = mysql.createConnection(config);
+        connection.connect(function (err) {
+            if (err) throw err;
+            connection.query(sql, [value], function (err) {
+                if (err) throw err;
+                //console.log('User: ' + name + ' ' + password + ' added!');
+                console.log('Successful deleted');
                 connection.end();
                 resolve();
             });

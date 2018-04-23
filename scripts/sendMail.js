@@ -10,4 +10,4 @@ function date() {
     return year + ":" + month + ":" + day + ":" + hour + ":" + min;
 }
 
-postman.sendMail("knocker767@gmail.com", date(), '', __dirname + '/../final/finalwithsellers1.xlsx');
+postman.sendMail("", date(), '', __dirname + '/../final/finalwithsellers1.xlsx');

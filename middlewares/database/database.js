@@ -93,9 +93,9 @@ exports.addCodecat = async function (data, excelTable) {
     });
 };
 
-exports.findPrices = function () {
+exports.findPrices = function (excel_sql) {
     return new Promise(function (resolve, reject) {
-        const excel_sql = 'SELECT vendor_code FROM excel WHERE code_cat IS NOT NULL AND avg_price IS NULL';
+        //const excel_sql = 'SELECT vendor_code FROM excel WHERE code_cat IS NOT NULL AND avg_price IS NULL';
         pool.getConnection(async function (err, connection) {
             if (err) throw err;
             await connection.query(excel_sql, function (err, result) {
@@ -208,4 +208,8 @@ exports.getAllProductsFilter = async function () {
 
 exports.selectAllWithOptions = async function () {
     return await queryFunction('SELECT * FROM excel WHERE ')
+};
+
+exports.fixSession = async function () {
+    return await queryFunction('truncate table sessions');
 };

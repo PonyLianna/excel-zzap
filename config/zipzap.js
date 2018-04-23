@@ -1,5 +1,6 @@
 const request = require('request');
 const mysql = require('./../middlewares/database/database');
+const api_key = require('./config').api_key;
 
 exports.GetSearchResultV2 = function (id, partnumber, class_man, excelTable, sellersTable) {
     const options = {
@@ -14,7 +15,7 @@ exports.GetSearchResultV2 = function (id, partnumber, class_man, excelTable, sel
             'location': 1,
             'row_count': 200,
             'type_request': 0,
-            'api_key': ''
+            'api_key': api_key
         }
     };
 

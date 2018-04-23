@@ -6,8 +6,14 @@ const manipulate = require('../middlewares/database/databaseManipulate');
 const codecat = require('../middlewares/codecat');
 const proc = require('../middlewares/dataProcessing');
 
-module.exports = function (io) {
+exports.main = function (io) { // DEFAULT FUNCTION
     io.sockets.on('connection', async function (socket) {
+        exports.log = function (i, massive) {
+            const message = {"time": new Date().toUTCString() + ' ' + i, "length": massive.length, "now": i+1};
+            console.log(message);
+            socket.emit('codecat', message);
+        };
+
         console.log('Client is connected!');
         socket.emit('message', 'You are connected to server');
 
@@ -23,11 +29,11 @@ module.exports = function (io) {
         socket.on('update', async function (time) {
             await database.cleanTablesSocket();
             await codecat.codecatTest('excel', 'sellers', await database.getAllProductsFilter());
-            await database.insertTables();
-            await database.findPrices();
+            // await database.insertTables();
+            await database.findPrices('SELECT vendor_code FROM excel');
         });
 
-        socket.on('delete',async function (time) {
+        socket.on('delete', async function (time) {
             await manipulate.destroyAll();
             await manipulate.createAll();
             await manipulate.csv();
