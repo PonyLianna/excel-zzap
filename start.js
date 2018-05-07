@@ -1,4 +1,3 @@
-// const routes = require('./routes');
 const express = require('express');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
@@ -44,6 +43,8 @@ app.use('/css', express.static(__dirname + '/public/css'));
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
+
+app.set('view engine', 'ejs');
 
 require('./app/routes')(app, passport, io);
 require('./app/socket').main(io);

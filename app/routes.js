@@ -14,6 +14,8 @@ module.exports = function (app, passport, io) {
     // Home page
     app.get('/', isLoggedIn, function (req, res) {
         res.sendFile('index.html', {root: './public'});
+        console.log(req.connection.localAddress);
+        console.log(req.connection.localPort);
     });
 
     app.post('/', isLoggedIn, async function (req, res) {

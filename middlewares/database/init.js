@@ -16,8 +16,8 @@ const times = '(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, time VARCHAR(20))';
 const waitFor = (ms) => new Promise(r => setTimeout(r, ms));
 
 exports.configure = async function () {
-        console.log('Starting!');
-        return createAll();
+    console.log('Starting!');
+    return createAll();
 };
 
 async function createAll() {

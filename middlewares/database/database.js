@@ -1,7 +1,25 @@
 const mysql = require('mysql');
 const config = require('../../config/db').config;
+// let pool;
+//
+// function handlePool() {
+//     pool = mysql.createPool(config);
+//
+//     pool.getConnection(function (err, connection) {
+//         if (err) {
+//             console.log("error while connecting to db");
+//             setTimeout(handlePool(), 2000);
+//             connection.release();
+//         }
+//         connection.on('error', function (err) {
+//             console.log('Connection problem');
+//             handlePool();
+//         });
+//     })
+// }
 
-let pool = mysql.createPool(config);
+// handlePool();
+pool = mysql.createPool(config);
 exports.config = config;
 
 const waitFor = (ms) => new Promise(r => setTimeout(r, ms));
@@ -212,4 +230,9 @@ exports.selectAllWithOptions = async function () {
 
 exports.fixSession = async function () {
     return await queryFunction('truncate table sessions');
+};
+
+exports.fixDatabase = async function () {
+    return await Promise.all([queryFunction('SET session wait_timeout=1209600'),
+        queryFunction('SET @@global.wait_timeout=1209600')]);
 };
