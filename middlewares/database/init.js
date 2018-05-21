@@ -11,7 +11,7 @@ const sellersColumn = '(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, seller VARCH
     ' instock TINYINT(1), wholesale TINYINT(1))';
 const emptyCodecat = '(id INT NOT NULL, vendor_code VARCHAR(100))';
 const temp = '(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, manufacturer VARCHAR(20), vendor_code VARCHAR(100), name VARCHAR(255))';
-const times = '(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, time VARCHAR(20))';
+const times = '(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, time VARCHAR(50))';
 
 const waitFor = (ms) => new Promise(r => setTimeout(r, ms));
 

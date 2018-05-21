@@ -1,25 +1,6 @@
 const mysql = require('mysql');
 const config = require('../../config/db').pool_config;
 pool = mysql.createPool(config);
-// let pool;
-//
-// function handlePool() {
-//     pool = mysql.createPool(config);
-//
-//     pool.getConnection(function (err, connection) {
-//         if (err) {
-//             console.log("error while connecting to db");
-//             setTimeout(handlePool(), 2000);
-//             connection.release();
-//         }
-//         connection.on('error', function (err) {
-//             console.log('Connection problem');
-//             handlePool();
-//         });
-//     })
-// }
-//
-// handlePool();
 
 let queryFunction = function (sql, time) {
     return new Promise((resolve, reject) => {
@@ -40,7 +21,7 @@ exports.addData = function (time) {
 };
 
 exports.delData = function (time) {
-    queryFunction('DELETE FROM times WHERE time = ?', time);
+    queryFunction("DELETE FROM times WHERE time = '" + time + "'");
 };
 
 exports.readData = async function () {
@@ -48,5 +29,5 @@ exports.readData = async function () {
 };
 
 exports.findData = async function (time) {
-    return await queryFunction('SELECT * FROM times where time = ?', time);
+    return await queryFunction("SELECT * FROM times where time = '" + time + "'");
 };

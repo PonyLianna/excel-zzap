@@ -2,7 +2,7 @@ const CronJob = require('cron').CronJob;
 const mysql = require('./database/databaseSocket');
 const codecat = require('../middlewares/codecat');
 const database = require('./database/database');
-
+const socket = require('../app/socket');
 let max = 0;
 let jobs = {};
 
@@ -12,11 +12,13 @@ exports.init = async function () {
     result.forEach(function (data) {
         max = data.id;
         let time = '';
+        let spec = 0;
 
         time = new Date(data.time);
         console.log(time);
         if (time == 'Invalid Date') {
             time = data.time;
+            spec = 1;
             console.log('?');
         }
 
@@ -27,17 +29,22 @@ exports.init = async function () {
             await database.cleanTablesSocket();
             await codecat.codecatTest('excel', 'sellers', await database.getAllProductsFilter());
             await database.findPrices('SELECT vendor_code FROM excel');
-            await mysql.delData(await exports.find(data.time));
+            if (spec == 0){
+                await mysql.delData((await exports.find(time)[0]).time);
+            }
+            await socket.times();
         }, null, true);
     });
 };
 
 exports.add = function (time) {
     let newTime = '';
+    let spec = 0;
     newTime = new Date(time);
 
     if (newTime == 'Invalid Date') {
         newTime = time;
+        spec = 1;
         console.log('?');
     }
 
@@ -46,8 +53,11 @@ exports.add = function (time) {
         await database.cleanTablesSocket();
         await codecat.codecatTest('excel', 'sellers', await database.getAllProductsFilter());
         await database.findPrices('SELECT vendor_code FROM excel');
-        // await mysql.delData(await exports.find(time));
-        // console.log(await exports.find(time));
+        console.log((await exports.find(time))[0].time);
+        if (spec == 0) {
+            await mysql.delData((await exports.find(time))[0].time);
+        }
+        await socket.times();
     }, null, true);
     max += 1;
 };
@@ -64,7 +74,5 @@ exports.list = async function () {
 };
 
 exports.find = async function (time) {
-    return new Promise(async function (resolve, reject) {
-        resolve(await mysql.findData(time));
-    });
+    return await mysql.findData(time);
 };

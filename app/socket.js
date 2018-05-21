@@ -14,10 +14,14 @@ exports.main = function (io) { // DEFAULT FUNCTION
             socket.emit('codecat', message);
         };
 
+        exports.times = async function() {
+            socket.emit('time', await cron.list());
+        };
+
         console.log('Client is connected!');
         socket.emit('message', 'You are connected to server');
 
-        socket.emit('time', await cron.list());
+        exports.times();
 
         socket.broadcast.emit('message', 'New Client is connected');
 

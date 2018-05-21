@@ -1,25 +1,9 @@
 const mysql = require('mysql');
 const config = require('../../config/db').config;
-// let pool;
-//
-// function handlePool() {
-//     pool = mysql.createPool(config);
-//
-//     pool.getConnection(function (err, connection) {
-//         if (err) {
-//             console.log("error while connecting to db");
-//             setTimeout(handlePool(), 2000);
-//             connection.release();
-//         }
-//         connection.on('error', function (err) {
-//             console.log('Connection problem');
-//             handlePool();
-//         });
-//     })
-// }
 
-// handlePool();
 pool = mysql.createPool(config);
+exports.pool = pool;
+
 exports.config = config;
 
 const waitFor = (ms) => new Promise(r => setTimeout(r, ms));

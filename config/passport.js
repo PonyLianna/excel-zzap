@@ -1,11 +1,12 @@
 // load all the things we need
 const LocalStrategy = require('passport-local').Strategy;
 const sql = require('./../middlewares/database/database');
+const pool = require('./../middlewares/database/database').pool;
 const mysql = require('mysql');
 
 // load up the user model
 sql.config.database = require('./db').db;
-const connection = mysql.createConnection(sql.config);
+
 // expose this function to our app using module.exports
 module.exports = function (passport) {
 
@@ -17,7 +18,8 @@ module.exports = function (passport) {
 
     // used to deserialize the user
     passport.deserializeUser(function (id, done) {
-        connection.query('SELECT * FROM users WHERE id = ? ', [id], function (err, rows) {
+        pool.query('SELECT * FROM users WHERE id = ? ', [id], function (err, rows) {
+            if (err) return done(err);
             console.log('deserialize');
             done(err, rows[0]);
         });
@@ -38,7 +40,7 @@ module.exports = function (passport) {
                 passReqToCallback: true // allows us to pass back the entire request to the callback
             },
             function (req, username, password, done) { // callback with email and password from our form
-                connection.query('SELECT * FROM users WHERE name = ?', [username], function (err, rows) {
+                pool.query('SELECT * FROM users WHERE name = ?', [username], function (err, rows) {
                     if (err) return done(err);
 
                     if (!rows.length) {

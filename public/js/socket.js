@@ -5,7 +5,7 @@ $(document).ready(function () {
     });
 
     socket.on('codecat', function (data) {
-        let percent = Math.floor(100/data.length);
+        let percent = 100/data.length;
 
         $('#info').append('<p>' + data.time + '</p>');
         if ((data.length > data.now) && ($('#process').hasClass('disabled'))) {
@@ -28,7 +28,7 @@ $(document).ready(function () {
             $("#preload-invisible").hide("fast");
         }
         else {
-            console.log(percent*data.now + '%');
+            console.log(percent * data.now + '%');
             $("p#progress").text(data.now + " / " + data.length);
             $("div.determinate").width(percent * data.now + '%');
         }
@@ -36,6 +36,7 @@ $(document).ready(function () {
 
     socket.on('time', function (data) {
         console.log(data);
+        $('.collection').empty();
         data.forEach(function (one_data) {
             $('.collection').append('<li class="collection-item"><span>' + one_data.time + '</span><a class="secondary-content">' +
                 'Delete</a></li>');
