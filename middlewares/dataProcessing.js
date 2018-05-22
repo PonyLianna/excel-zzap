@@ -59,11 +59,9 @@ async function altRead(zero, instock, wholesale) {
         // let zero = await mysql.selectAll();
         let myzero = zero;
         let processed = 0;
-        console.log('test');
         console.log(zero);
 
         await asyncForEach(zero, async function(value, i){
-            console.log('Im in async!');
             waitFor(10);
             let seller = await mysql.selectSellerFilter(value.vendor_code, instock, wholesale);
             if (seller) {
@@ -91,7 +89,6 @@ exports.export = async function(exportFrom){
 };
 
 exports.altExport = async function(exportFrom, instock, wholesale){
-    console.log('altexport');
     let data = await altRead(exportFrom, instock, wholesale);
     return await save(name, filename, data);
 };

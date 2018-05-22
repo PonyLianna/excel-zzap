@@ -9,7 +9,7 @@ async function asyncForEach(array, callback) {
 
 async function send (email, subject, text, path) {
     let message = {
-        from: "jokki.kolli@yandex.ru",
+        from: smtpConfig.emailUsername,
         to: email,
         subject: subject,
         text: text,

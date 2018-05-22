@@ -173,3 +173,21 @@ exports.deleteUser = function (name) {
         });
     });
 };
+
+exports.deleteSessions = function (name) {
+    let value = [[name]];
+    const sql = 'DELETE FROM users WHERE name = ?';
+    return new Promise((resolve, reject) => {
+        const connection = mysql.createConnection(config);
+        connection.connect(function (err) {
+            if (err) throw err;
+            connection.query(sql, [value], function (err) {
+                if (err) throw err;
+                //console.log('User: ' + name + ' ' + password + ' added!');
+                console.log('Successful deleted');
+                connection.end();
+                resolve();
+            });
+        });
+    });
+};

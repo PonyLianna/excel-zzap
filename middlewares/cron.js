@@ -19,13 +19,9 @@ exports.init = async function () {
         if (time == 'Invalid Date') {
             time = data.time;
             spec = 1;
-            console.log('?');
         }
 
-        console.log(max);
-        console.log(time);
         jobs[max] = new CronJob(time, async function () {
-            console.log('something');
             await database.cleanTablesSocket();
             await codecat.codecatTest('excel', 'sellers', await database.getAllProductsFilter());
             await database.findPrices('SELECT vendor_code FROM excel');
@@ -45,11 +41,9 @@ exports.add = function (time) {
     if (newTime == 'Invalid Date') {
         newTime = time;
         spec = 1;
-        console.log('?');
     }
 
     jobs[max] = new CronJob(newTime, async function () {
-        console.log('something');
         await database.cleanTablesSocket();
         await codecat.codecatTest('excel', 'sellers', await database.getAllProductsFilter());
         await database.findPrices('SELECT vendor_code FROM excel');

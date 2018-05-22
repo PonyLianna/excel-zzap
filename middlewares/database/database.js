@@ -10,13 +10,9 @@ const waitFor = (ms) => new Promise(r => setTimeout(r, ms));
 
 let queryFunction = function (sql, info) {
     return new Promise((resolve, reject) => {
-        pool.getConnection(function (err, connection) {
+        pool.query(sql, [info], async function (err, result, fields) {
             if (err) throw err;
-            connection.query(sql, [info], function (err, result, fields) {
-                if (err) throw err;
-                connection.release();
-                resolve(result);
-            });
+            return resolve(result);
         });
     });
 };
@@ -31,21 +27,9 @@ exports.getUsers = function () {
             connection.release();
         });
     });
-    // await queryFunction()
 };
 
 exports.getAllProducts = async function (table) {
-    // const sql = 'SELECT id, manufacturer, vendor_code FROM ' + table;
-    // return new Promise((resolve, reject) => {
-    //     pool.getConnection(function (err, connection) {
-    //         if (err) throw err;
-    //         connection.query(sql, function (err, result, fields) {
-    //             if (err) throw err;
-    //             connection.release();
-    //             resolve(result);
-    //         });
-    //     });
-    // });
     return await queryFunction('SELECT id, manufacturer, vendor_code FROM ' + table);
 };
 
@@ -97,7 +81,6 @@ exports.addCodecat = async function (data, excelTable) {
 
 exports.findPrices = function (excel_sql) {
     return new Promise(function (resolve, reject) {
-        //const excel_sql = 'SELECT vendor_code FROM excel WHERE code_cat IS NOT NULL AND avg_price IS NULL';
         pool.getConnection(async function (err, connection) {
             if (err) throw err;
             await connection.query(excel_sql, function (err, result) {
@@ -138,7 +121,6 @@ exports.addEmpty = function (data) {
 };
 
 exports.findLast = function (table) {
-    // const sql = "SELECT GREATEST((SELECT MAX(id) FROM empty),(SELECT MAX(id) FROM excel WHERE code_cat IS NOT NULL))";
     const sql = "SELECT MAX(id) FROM " + table + " WHERE code_cat IS NOT NULL";
     return new Promise((resolve, reject) => {
         pool.query(sql, function (err, results, fields) {
@@ -208,15 +190,10 @@ exports.getAllProductsFilter = async function () {
     return await queryFunction('SELECT * FROM excel'); // WHERE codecat IS NOT NULL
 };
 
-exports.selectAllWithOptions = async function () {
-    return await queryFunction('SELECT * FROM excel WHERE ')
-};
-
 exports.fixSession = async function () {
-    return await queryFunction('truncate table sessions');
-};
-
-exports.fixDatabase = async function () {
-    return await Promise.all([queryFunction('SET session wait_timeout=1209600'),
-        queryFunction('SET @@global.wait_timeout=1209600')]);
+    return new Promise(async (resolve, reject) => {
+        await queryFunction('truncate table sessions');
+        resolve();
+        pool.end();
+    });
 };
