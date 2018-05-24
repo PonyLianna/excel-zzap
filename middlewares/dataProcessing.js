@@ -30,7 +30,6 @@ function save (name, filename, info) {
 async function read(zero) {
     return new Promise(async function (resolve, reject) {
         let arr = [];
-        // let zero = await mysql.selectAll();
         let myzero = zero;
         let processed = 0;
 
@@ -43,8 +42,6 @@ async function read(zero) {
                 myzero[i][sell] = num;
             });
             processed++;
-            console.log(processed);
-            console.log(zero.length);
             if (processed === zero.length){
                 console.log('finished');
                 resolve(myzero);
@@ -56,7 +53,6 @@ async function read(zero) {
 async function altRead(zero, instock, wholesale) {
     return new Promise(async function (resolve, reject) {
         let arr = [];
-        // let zero = await mysql.selectAll();
         let myzero = zero;
         let processed = 0;
         console.log(zero);
@@ -73,8 +69,6 @@ async function altRead(zero, instock, wholesale) {
                 });
             }
             processed++;
-            console.log(processed);
-            console.log(zero.length);
             if (processed === zero.length){
                 console.log('Finished');
                 resolve(myzero);
