@@ -56,7 +56,7 @@ exports.addNewSeller = function (data, sellersTable) {
             connection.query(sql, [data], async function (err) {
                 if (err) throw err;
                 await console.log('Added new Seller ' + data);
-                await connection.release();
+                connection.release();
                 resolve();
             });
         });
@@ -72,7 +72,7 @@ exports.addCodecat = async function (data, excelTable) {
             connection.query(sql, async function (err) {
                 if (err) throw err;
                 await console.log('ID ' + data[0] + ' code_cat ' + data[1]);
-                await connection.release();
+                connection.release();
                 resolve();
             });
         });
@@ -113,7 +113,6 @@ exports.addEmpty = function (data) {
             connection.query(sql, [data], async function (err) {
                 if (err) throw err;
                 console.log('Added Empty code ' + data);
-                await connection.release();
                 resolve();
             });
         });

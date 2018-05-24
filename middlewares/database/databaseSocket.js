@@ -1,16 +1,11 @@
 const mysql = require('mysql');
-const config = require('../../config/db').pool_config;
-pool = mysql.createPool(config);
+const pool = require('./database').pool;
 
 let queryFunction = function (sql, time) {
     return new Promise((resolve, reject) => {
-        pool.getConnection(function (err, connection) {
+        pool.query(sql, [time], async function (err, result, fields) {
             if (err) throw err;
-            connection.query(sql, [time], function (err, result, fields) {
-                if (err) throw err;
-                connection.release();
-                resolve(result);
-            });
+            resolve(result);
         });
     });
 };

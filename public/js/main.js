@@ -28,7 +28,6 @@ $(document).ready(function () {
 
     $('#options').click(function () {
         $(".btn-small.waves-effect.scale-transition").toggleClass("scale-out");
-        // $("#delete").toggleClass("scale-out");
     });
 
     $('#form').submit(function (e) {
