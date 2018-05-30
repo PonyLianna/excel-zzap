@@ -2,6 +2,18 @@ const mysql = require('mysql');
 const config = require('../../config/db').config;
 
 pool = mysql.createPool(config);
+pool.on('acquire', function (connection) {
+    console.log('Connection %d acquired', connection.threadId);
+});
+
+pool.on('release', function (connection) {
+    console.log('Connection %d released', connection.threadId);
+});
+pool.on('error', function (err) {
+    console.log(err);
+    pool = mysql.createPool(config);
+});
+
 exports.pool = pool;
 
 exports.config = config;
@@ -24,7 +36,7 @@ exports.getUsers = function () {
         connection.query(sql, function (err, result, fields) {
             if (err) throw err;
             console.log(result[0].name + ' ' + result[0].password);
-            connection.release();
+            connection.release  ();
         });
     });
 };

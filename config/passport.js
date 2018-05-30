@@ -3,8 +3,6 @@ const LocalStrategy = require('passport-local').Strategy;
 const sql = require('./../middlewares/database/database');
 const pool = require('./../middlewares/database/database').pool;
 
-sql.config.database = require('./db').db;
-
 module.exports = function (passport) {
 
     // serialize the user for the session
