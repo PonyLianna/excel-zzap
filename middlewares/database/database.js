@@ -31,13 +31,9 @@ let queryFunction = function (sql, info) {
 
 exports.getUsers = function () {
     const sql = 'SELECT name, password FROM users';
-    pool.getConnection(function (err, connection) {
-        if (err) throw err;
-        connection.query(sql, function (err, result, fields) {
+    pool.query(sql, function (err, result, fields) {
             if (err) throw err;
             console.log(result[0].name + ' ' + result[0].password);
-            connection.release  ();
-        });
     });
 };
 
@@ -48,14 +44,7 @@ exports.getAllProducts = async function (table) {
 exports.getAllProductsLarge = async function (table) {
     const last = await exports.findLast(table);
     const sql = 'SELECT id, manufacturer, vendor_code FROM ' + table + ' WHERE id >=' + last;
-    //const sql = 'SELECT id, manufacturer, vendor_code FROM ' + table;
 
-    // return new Promise((resolve, reject) => {
-    //     pool.query(sql, function (err, rows, fields) {
-    //         if (err) throw err;
-    //         resolve(rows);
-    //     });
-    // });
     return await queryFunction(sql);
 };
 
@@ -63,39 +52,29 @@ exports.addNewSeller = function (data, sellersTable) {
     data = [data];
     const sql = 'INSERT INTO ' + sellersTable + '(seller,vendor_code,price,instock,wholesale) VALUES ?';
     return new Promise((resolve, reject) => {
-        pool.getConnection(function (err, connection) {
-            if (err) throw err;
-            connection.query(sql, [data], async function (err) {
+        pool.query(sql, [data], async function (err) {
                 if (err) throw err;
                 await console.log('Added new Seller ' + data);
-                connection.release();
                 resolve();
             });
         });
-    });
 };
 
 exports.addCodecat = async function (data, excelTable) {
     return new Promise((resolve, reject) => {
         const sql = 'UPDATE ' + excelTable + ' SET code_cat=' + data[1] + ' WHERE id = ' + data[0];
         console.log(sql);
-        pool.getConnection(function (err, connection) {
-            if (err) throw err;
-            connection.query(sql, async function (err) {
+        pool.query(sql, async function (err) {
                 if (err) throw err;
                 await console.log('ID ' + data[0] + ' code_cat ' + data[1]);
-                connection.release();
                 resolve();
             });
         });
-    });
 };
 
 exports.findPrices = function (excel_sql) {
     return new Promise(function (resolve, reject) {
-        pool.getConnection(async function (err, connection) {
-            if (err) throw err;
-            await connection.query(excel_sql, function (err, result) {
+        pool.query(excel_sql, function (err, result) {
                 if (err) throw err;
                 result.forEach(function (row) {
                     const partnumber = row.vendor_code;
@@ -105,7 +84,7 @@ exports.findPrices = function (excel_sql) {
                         'max_price = (SELECT MAX(price) FROM sellers WHERE vendor_code = "' + partnumber + '") ' +
                         'WHERE vendor_code = "' + partnumber + '"';
 
-                    connection.query(sql, function (err, result) {
+                    pool.query(sql, function (err, result) {
                         if (err) throw err;
                         console.log(sql);
                     });
@@ -113,7 +92,6 @@ exports.findPrices = function (excel_sql) {
             });
             resolve();
         });
-    });
 };
 
 exports.addEmpty = function (data) {
