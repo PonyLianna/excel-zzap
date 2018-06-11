@@ -1,4 +1,11 @@
 $(document).ready(function () {
+    $('.datepicker-day-button').click(function () {
+        if ($('#change-time').text() == 'EVERYTIME'){
+            $('datepicker-controls').hide();
+            console.log(1);
+        }
+    });
+
     $('.datepicker').click(function () {
         if ($('#change-time').text() == 'EVERYTIME') {
             instance1.open();
@@ -9,6 +16,11 @@ $(document).ready(function () {
     $('#time').click(function () {
         $("#window").show("fast");
         $("#window-invisible").show("fast");
+    });
+
+    $('#close').click(function () {
+        $("#window").hide("fast");
+        $("#window-invisible").hide("fast");
     });
 
     $('#window-invisible').click(function () {
@@ -44,6 +56,8 @@ $(document).ready(function () {
             }
         });
     });
+
+
 
     $('#change-time').click(function () {
         $("#change-time").toggleClass('red');

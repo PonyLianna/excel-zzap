@@ -50,7 +50,7 @@ $(document).ready(function () {
 
     $('#add').click(function () {
         let myTime = '';
-        if ($('#change-time').text() == 'EVERYTIME'){
+        if (instances[0].getSelectedValues() == 'EVERYTIME'){
             myTime = '00 ' + instance2.minutes + ' ' + instance2.hours + ' ' + instance1.date.getDate() + ' * *';
             console.log(myTime);
         } else {

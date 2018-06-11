@@ -118,7 +118,8 @@ exports.db_csv = function (filename, tablename) {
     return new Promise(async (resolve, reject) => {
         console.log('db_csv');
         config.flags = 'LOCAL_FILES';
-        const sql = "LOAD DATA INFILE '" + (__dirname + "/../..").replace(/\\/g, "/") + "/uploads/" + filename + "' " +
+        const sql = "LOAD DATA LOCAL INFILE '" + (__dirname + "/../..").replace(/\\/g, "/") +
+            "/uploads/" + filename + "' " +
             "INTO TABLE " + tablename +
             " CHARACTER SET UTF8 " +
             "FIELDS TERMINATED BY ',' " +

@@ -9,6 +9,7 @@ pool.on('acquire', function (connection) {
 pool.on('release', function (connection) {
     console.log('Connection %d released', connection.threadId);
 });
+
 pool.on('error', function (err) {
     console.log(err);
     pool = mysql.createPool(config);
@@ -23,10 +24,10 @@ const waitFor = (ms) => new Promise(r => setTimeout(r, ms));
 let queryFunction = function (sql, info) {
     return new Promise((resolve, reject) => {
         pool.query(sql, [info], async function (err, result, fields) {
-            if (err) throw err;
-            return resolve(result);
+                if (err) throw err;
+                return resolve(result);
+            });
         });
-    });
 };
 
 exports.getUsers = function () {
@@ -98,14 +99,11 @@ exports.addEmpty = function (data) {
     const table = 'empty';
     const sql = 'INSERT INTO ' + table + '(id, vendor_code) VALUES (?)';
     return new Promise((resolve, reject) => {
-        pool.getConnection(function (err, connection) {
-            if (err) throw err;
-            connection.query(sql, [data], async function (err) {
+        pool.query(sql, [data], async function (err) {
                 if (err) throw err;
                 console.log('Added Empty code ' + data);
                 resolve();
             });
-        });
     });
 };
 
@@ -162,7 +160,7 @@ exports.cleanTables = async function () {
         await queryFunction('TRUNCATE TABLE pre_excel');
         await queryFunction('TRUNCATE TABLE pre_sellers');
         await queryFunction('TRUNCATE TABLE empty');
-        await console.log('Empty');
+        console.log('Empty');
         resolve();
     });
 };

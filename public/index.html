@@ -114,17 +114,24 @@
         <div id="window" class="z-depth-1 grey lighten-5 window">
             <br/>
             <div class="row">
-                <div class="col s3 offset-s2">
+                <div class="col s2 offset-s2">
                     <input type="text" class="datepicker">
                 </div>
-                <div class="col s3">
+                <div class="col s2">
                     <input type="text" class="timepicker">
                 </div>
-                <div class="col s1">
-                    <button id="add" class="btn waves-effect waves-light">Add</button>
-                </div>
                 <div class="col s2">
-                    <button id="change-time" class="btn waves-effect waves-light">DIRECTTIME</button>
+                        <select id="select">
+                            <option value="EVERYTIME">Постоянно</option>
+                            <option value="DIRECTTIME" selected>В указанное время</option>
+                        </select>
+                    <!--<button id="change-time" class="btn waves-effect waves-light">DIRECTTIME</button>-->
+                </div>
+                <div class="col s1">
+                    <button id="add" class="btn waves-effect waves-light">Добавить</button>
+                </div>
+                <div class="col s1 offset-s2">
+                    <button id="close" class="btn-floating red"><i class="material-icons">close</i></button>
                 </div>
             </div>
             <div class="row">
@@ -166,7 +173,20 @@
 <script>
     let options = new Object();
 
+    const elems = document.querySelectorAll('select');
+    const instances = M.FormSelect.init(elems);
+
     options.twelveHour = false;
+    options.onOpen = function () {
+        if (instances[0].getSelectedValues()[0] === "DIRECTTIME"){
+            $('.datepicker-date-display').show();
+            instance1.options.format = 'yyyy-mm-dd';
+        } else {
+            $('.datepicker-date-display').hide();
+            instance1.options.format = 'dd';
+        }
+    };
+
 
     const elem1 = document.querySelector('.datepicker');
     const elem2 = document.querySelector('.timepicker');
