@@ -6,8 +6,6 @@ exports.destroyAll = async function () {
         init.destroy('pre_excel'),
         init.destroy('temp_excel'),
 
-        init.destroy('users'),
-
         init.destroy('sellers'),
         init.destroy('pre_sellers'),
 

@@ -11,8 +11,7 @@ pool.on('release', function (connection) {
 });
 
 pool.on('error', function (err) {
-    console.log(err);
-    pool = mysql.createPool(config);
+    console.log('Pool on error ', err);
 });
 
 exports.pool = pool;
@@ -24,7 +23,7 @@ const waitFor = (ms) => new Promise(r => setTimeout(r, ms));
 let queryFunction = function (sql, info) {
     return new Promise((resolve, reject) => {
         pool.query(sql, [info], async function (err, result, fields) {
-                if (err) throw err;
+                if (err) console.log('SQL ', sql,' Query Function ', err);
                 return resolve(result);
             });
         });
@@ -33,7 +32,7 @@ let queryFunction = function (sql, info) {
 exports.getUsers = function () {
     const sql = 'SELECT name, password FROM users';
     pool.query(sql, function (err, result, fields) {
-            if (err) throw err;
+            if (err) console.log('SQL ', sql,' getUser Function ', err);
             console.log(result[0].name + ' ' + result[0].password);
     });
 };
@@ -54,7 +53,7 @@ exports.addNewSeller = function (data, sellersTable) {
     const sql = 'INSERT INTO ' + sellersTable + '(seller,vendor_code,price,instock,wholesale) VALUES ?';
     return new Promise((resolve, reject) => {
         pool.query(sql, [data], async function (err) {
-                if (err) throw err;
+                if (err) console.log('SQL ', sql,' addNewSeller Function ', err);
                 await console.log('Added new Seller ' + data);
                 resolve();
             });
@@ -66,7 +65,7 @@ exports.addCodecat = async function (data, excelTable) {
         const sql = 'UPDATE ' + excelTable + ' SET code_cat=' + data[1] + ' WHERE id = ' + data[0];
         console.log(sql);
         pool.query(sql, async function (err) {
-                if (err) throw err;
+                if (err) console.log('SQL ', sql,' Query Function ', err);
                 await console.log('ID ' + data[0] + ' code_cat ' + data[1]);
                 resolve();
             });
@@ -76,7 +75,7 @@ exports.addCodecat = async function (data, excelTable) {
 exports.findPrices = function (excel_sql) {
     return new Promise(function (resolve, reject) {
         pool.query(excel_sql, function (err, result) {
-                if (err) throw err;
+                if (err) console.log('SQL ', sql,' Query Function ', err);
                 result.forEach(function (row) {
                     const partnumber = row.vendor_code;
                     const sql = 'UPDATE excel SET ' +
@@ -86,7 +85,7 @@ exports.findPrices = function (excel_sql) {
                         'WHERE vendor_code = "' + partnumber + '"';
 
                     pool.query(sql, function (err, result) {
-                        if (err) throw err;
+                        if (err) console.log('SQL ', sql,' Query Function ', err);
                         console.log(sql);
                     });
                 });
@@ -100,7 +99,7 @@ exports.addEmpty = function (data) {
     const sql = 'INSERT INTO ' + table + '(id, vendor_code) VALUES (?)';
     return new Promise((resolve, reject) => {
         pool.query(sql, [data], async function (err) {
-                if (err) throw err;
+                if (err) console.log('SQL ', sql,' Query Function ', err);
                 console.log('Added Empty code ' + data);
                 resolve();
             });
@@ -111,7 +110,7 @@ exports.findLast = function (table) {
     const sql = "SELECT MAX(id) FROM " + table + " WHERE code_cat IS NOT NULL";
     return new Promise((resolve, reject) => {
         pool.query(sql, function (err, results, fields) {
-            if (err) throw err;
+            if (err) console.log('SQL ', sql,' Query Function ', err);
             const result = results[0][Object.keys(results[0])];
             console.log("Finded " + result);
             if (!result) {
