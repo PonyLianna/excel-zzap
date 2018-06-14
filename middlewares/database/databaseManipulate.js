@@ -6,6 +6,8 @@ exports.destroyAll = async function () {
         init.destroy('pre_excel'),
         init.destroy('temp_excel'),
 
+        init.destroy('users'),
+
         init.destroy('sellers'),
         init.destroy('pre_sellers'),
 
@@ -14,7 +16,22 @@ exports.destroyAll = async function () {
         init.destroy('temp'),
         init.destroy('times')
     ]);
+};
 
+exports.truncateAll = async function() {
+    return await Promise.all([
+        init.truncate('excel'),
+        init.truncate('pre_excel'),
+        init.truncate('temp_excel'),
+
+        init.truncate('sellers'),
+        init.truncate('pre_sellers'),
+
+        init.truncate('empty'),
+        init.truncate('pre_empty'),
+        init.truncate('temp'),
+        init.truncate('times')
+    ]);
 };
 
 exports.createAll = async function () {

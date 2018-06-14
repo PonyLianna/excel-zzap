@@ -175,11 +175,3 @@ exports.cleanTablesSocket = async function () {
 exports.getAllProductsFilter = async function () {
     return await queryFunction('SELECT * FROM excel'); // WHERE codecat IS NOT NULL
 };
-
-exports.fixSession = async function () {
-    return new Promise(async (resolve, reject) => {
-        await queryFunction('truncate table sessions');
-        resolve();
-        pool.end();
-    });
-};
