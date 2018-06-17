@@ -14,8 +14,7 @@ const waitFor = (ms) => new Promise(r => setTimeout(r, ms));
 function request(id, partnumber, class_man, excelTable, sellersTable) {
     return new Promise(async function (resolve, reject) {
         console.log(id + ' ' + class_man + ' ' + partnumber);
-        await zipzap.GetSearchResultV2(id, partnumber, class_man, excelTable, sellersTable)
-            .catch((err) => {
+        await zipzap.GetSearchResultV2(id, partnumber, class_man, excelTable, sellersTable).catch((err) => {
                 console.log(errCounter);
                 errCounter += 1;
                 fs.appendFile('log.txt', err + "\n" + errCounter + "\n", function (err) {

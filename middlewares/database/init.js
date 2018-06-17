@@ -35,18 +35,21 @@ const temp = '(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, ' +
 const times = '(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, ' +
     'time VARCHAR(50))';
 
+const sessions = '(sid varchar(255) COLLATE utf8_unicode_ci NOT NULL,' +
+    '  session text COLLATE utf8_unicode_ci NOT NULL,' +
+    '  expires int(11) DEFAULT NULL,' +
+    '  PRIMARY KEY (sid))';
+
 let queryFunction = function (sql, info) {
     return new Promise((resolve, reject) => {
         const connection = mysql.createConnection(config);
         connection.query(sql, [info], function (err, result, fields) {
             connection.end();
-            if (err) console.log(err);
+            if (err) console.log(config);
             resolve(result);
         });
     });
 };
-
-const waitFor = (ms) => new Promise(r => setTimeout(r, ms));
 
 exports.configure = async function () {
     console.log('Starting configuration!');
@@ -54,38 +57,34 @@ exports.configure = async function () {
 };
 
 async function createAll() {
-    const sql = 'CREATE DATABASE ' + database + ' CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci';
+    const sql = "CREATE DATABASE " + database + " CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
     console.log(sql);
-
-    config.database = database;
-
     await setConnections();
 
+    await create_db(sql).catch(function (err) {
+        console.log(123);
+    });
+
     return Promise.all([
-        create_db(sql).catch(function (err) {
-            console.log(err)
-        }),
+        config.database = database,
         create_table('excel', excelColumn),
         create_table('pre_excel', excelColumn),
         create_table('temp_excel', excelColumn),
-
         create_table('users', usersColumn),
-
         create_table('sellers', sellersColumn),
         create_table('pre_sellers', sellersColumn),
         create_table('temp', temp),
-
         create_table('empty', emptyCodecat),
         create_table('pre_empty', emptyCodecat),
-
-        create_table('times', times)
+        create_table('times', times),
+        create_table('sessions', sessions)
     ]);
 }
 
 function create_db(sql) {
     return new Promise(async (resolve, reject) => {
         await queryFunction(sql);
-        console.log(sql)
+        console.log(sql);
         resolve();
     });
 }

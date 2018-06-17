@@ -5,6 +5,7 @@ return Promise.all([
     mysql.destroy(mytable = 'temp_excel'),
 
     mysql.destroy(mytable = 'users'),
+    mysql.destroy(mytable = 'sessions'),
 
     mysql.destroy(mytable = 'sellers'),
     mysql.destroy(mytable = 'pre_sellers'),

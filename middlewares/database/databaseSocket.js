@@ -1,14 +1,6 @@
 const mysql = require('mysql');
 const pool = require('./database').pool;
-
-let queryFunction = function (sql, time) {
-    return new Promise((resolve, reject) => {
-        pool.query(sql, [time], async function (err, result, fields) {
-            if (err) throw err;
-            resolve(result);
-        });
-    });
-};
+const queryFunction = require('./database').queryFunction;
 
 exports.addData = function (time) {
     console.log(time);
