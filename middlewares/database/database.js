@@ -10,10 +10,6 @@ pool.on('release', function (connection) {
     console.log('Connection %d released', connection.threadId);
 });
 
-pool.on('error', function (err) {
-    console.log('Pool on error ', err);
-});
-
 exports.pool = pool;
 exports.config = config;
 
@@ -22,20 +18,14 @@ const waitFor = (ms) => new Promise(r => setTimeout(r, ms));
 let queryFunction = function (sql, info) {
     return new Promise((resolve, reject) => {
         pool.getConnection(function (err, connection) {
-            connection.on('error', function (err) {
-                console.log(err); // 'ER_BAD_DB_ERROR'
-            });
-            connection.query(sql, [info], async function (err, result, fields) {
+            connection.query(sql, info, async (err, results, fields) => {
                 connection.release();
-                if (err) {
-                    console.log('SQL ', sql, ' Query Function ', err);
-                    setTimeout(queryFunction(sql, info));
-                }
-                return resolve(result);
+                // if (err) {
+                //     console.log('SQL ', sql, ' Query Function ', err);
+                //     setTimeout(queryFunction(sql, info));
+                // }
+                return resolve(results);
             });
-            connection.on('error', function () {
-                queryFunction(sql, info);
-            })
         });
     });
 };
@@ -62,8 +52,7 @@ exports.getAllProductsLarge = async function (table) {
 };
 
 exports.addNewSeller = function (data, sellersTable) {
-    data = [data];
-    const sql = 'INSERT INTO ' + sellersTable + '(seller,vendor_code,price,instock,wholesale) VALUES ?';
+    const sql = 'INSERT INTO ' + sellersTable + '(seller,vendor_code,price,instock,wholesale) VALUES (?)';
     return new Promise(async (resolve, reject) => {
         // pool.query(sql, [data], async function (err) {
         //     if (err) console.log('SQL ', sql, ' addNewSeller Function ', err);

@@ -5,3 +5,4 @@ package-lock.json
 /config/email.js
 /middlewares/db/postgresql.js
 /scripts/createtable.js
+/config/config.js
