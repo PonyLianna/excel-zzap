@@ -8,8 +8,9 @@ async function asyncForEach(array, callback) {
 }
 
 async function send (email, subject, text, path) {
+    console.log(smtpConfig.auth.emailUsername);
     let message = {
-        from: smtpConfig.emailUsername,
+        from: smtpConfig.auth.user,
         to: email,
         subject: subject,
         text: text,

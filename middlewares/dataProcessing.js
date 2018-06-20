@@ -55,6 +55,7 @@ async function altRead(zero, instock, wholesale) {
         let arr = [];
         let myzero = zero;
         let processed = 0;
+        console.log(1123);
         console.log(zero);
 
         await asyncForEach(zero, async function(value, i){
