@@ -12,13 +12,7 @@ const options = { config: require('./config/db').pool_config };
 
 const Server = require('http').Server;
 
-process.on('uncaughtException', err => {
-    console.log(err, 'Uncaught Exception thrown');
-});
-
-process.setMaxListeners(100);
-
-app = express(); // Express instance created!
+app = express(); // Express instance= created!
 server = Server(app);
 const io = require('socket.io')(server);
 

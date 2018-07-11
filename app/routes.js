@@ -25,7 +25,7 @@ module.exports = function (app, passport, io) {
         await waitFor(4000);
         await mysql.db_csv('main.csv', 'pre_excel');
         await waitFor(4000);
-        await codecat.codecat('pre_excel', 'pre_sellers', io);
+        await codecat.codecat(io);
         await database.insertTables();
         await database.findPrices('SELECT vendor_code FROM excel WHERE code_cat IS NOT NULL AND avg_price IS NULL');
         await dataProcessing.export(await database.selectAll());

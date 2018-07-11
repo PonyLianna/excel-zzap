@@ -1,7 +1,21 @@
 const mysql = require('mysql');
+// var mysql = require('mysql');
 
-let config = require('../../config/db').config;
-const database = require('../../config/db').db;
+let config = {
+    host: "localhost",
+    user: "root",
+    password: "",
+    database: "testing2"
+};
+
+let connection = mysql.createConnection(config);
+
+connection.connect(function () {
+    console.log("Connected!");
+});
+
+// let config = require('../../config/db').config;
+// const database = require('../../config/db').db;
 
 const excelColumn = '(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, ' +
     'manufacturer VARCHAR(20), ' +
@@ -39,6 +53,17 @@ const sessions = '(sid varchar(255) COLLATE utf8_unicode_ci NOT NULL,' +
     '  session text COLLATE utf8_unicode_ci NOT NULL,' +
     '  expires int(11) DEFAULT NULL,' +
     '  PRIMARY KEY (sid))';
+
+exports.test = function(){
+    return new Promise(resolve =>
+    {
+        connection.connect(function (err) {
+            if (err) throw err;
+            console.log("Connected!");
+            resolve();
+        });
+    })
+};
 
 let queryFunction = function (sql, info) {
     return new Promise((resolve, reject) => {

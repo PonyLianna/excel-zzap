@@ -8,18 +8,20 @@ async function asyncForEach(array, callback) {
 }
 
 async function send (email, subject, text, path) {
-    console.log(smtpConfig.auth.emailUsername);
+    // console.log(smtpConfig.auth.emailUsername);
     let message = {
         from: smtpConfig.auth.user,
         to: email,
         subject: subject,
         text: text,
-        attachments: [{
-            path: path
-        }]
+        // attachments: [{
+        //     path: path
+        // }],
+        //
     };
 
     const transporter = await nodemailer.createTransport(smtpConfig);
+    console.log(smtpConfig);
     transporter.sendMail(message, function(error, info){
         if (error) {
             console.log(error);
@@ -33,10 +35,7 @@ exports.sendMail = async function(emailList, subject, text, path){
     await asyncForEach(emailList.split(','), async function (email) {
         await send(email, subject, text, path);
         console.log(email);
+
     });
     console.log('Email ended!');
-};
-
-exports.getEmails = function () {
-
 };

@@ -5,4 +5,8 @@ package-lock.json
 /config/email.js
 /middlewares/db/postgresql.js
 /scripts/createtable.js
+<<<<<<< HEAD
+/middlewares/sequelize
+=======
 /config/config.js
+>>>>>>> Small commit to stable

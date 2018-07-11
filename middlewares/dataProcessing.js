@@ -1,4 +1,5 @@
 const mysql = require('./database/database');
+const database = require('./database');
 const xlsx = require('xlsx');
 
 const name = "sheetjs";
@@ -32,10 +33,10 @@ async function read(zero) {
         let arr = [];
         let myzero = zero;
         let processed = 0;
-
-        asyncForEach(zero, async function(value, i){
-            waitFor(10);
-            let seller = await mysql.selectSeller(value.Артикул);
+        console.log(1234);
+        await asyncForEach(zero, async function(value, i){
+            console.log(value);
+            let seller = await mysql.selectSeller(value.vendor_code);
             await seller.forEach(function (value) {
                 let sell = value.seller;
                 let num = value.price;
@@ -48,6 +49,26 @@ async function read(zero) {
             }
         });
     });
+}
+
+async function alternativeRead(instock, wholesale){
+    return new Promise(async function(){
+        let arr = await database.getExcel();
+        let processed = 0;
+        await Promise.all(arr.map(async (item) => {
+            let seller = database.selectSellers(item.vendor_code, instock, wholesale);
+            if (seller){
+                seller.forEach(function (value) {
+                    arr[processed][value.seller] = value.price;
+                });
+            }
+            processed++;
+            if (processed === arr.length){
+                console.log('Finished');
+                resolve(arr);
+            }
+        }))
+    })
 }
 
 async function altRead(zero, instock, wholesale) {
@@ -85,5 +106,10 @@ exports.export = async function(exportFrom){
 
 exports.altExport = async function(exportFrom, instock, wholesale){
     let data = await altRead(exportFrom, instock, wholesale);
+    return await save(name, filename, data);
+};
+
+exports.newExport = async function(instock, wholesale){
+    let data = await alternativeRead(instock, wholesale);
     return await save(name, filename, data);
 };
