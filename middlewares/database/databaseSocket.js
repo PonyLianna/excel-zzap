@@ -3,6 +3,8 @@ const pool = require('./database').pool;
 const queryFunction = require('./database').queryFunction;
 
 exports.addData = function (time) {
+
+exports.addData = function (time) {
     console.log(time);
     queryFunction('INSERT INTO times (time) VALUES (?)', time);
 };
