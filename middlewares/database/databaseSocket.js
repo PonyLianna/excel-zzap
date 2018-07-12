@@ -1,5 +1,5 @@
 const mysql = require('mysql');
-const pool = require('./database').pool;
+// const pool = require('./database').pool;
 const queryFunction = require('./database').queryFunction;
 
 exports.addData = function (time) {

@@ -1,46 +1,36 @@
 const mysql = require('mysql');
 // const config = require('../../config/db').config;
+const configuration = require('../../config/config');
 
-
-let config = {
-    host: "localhost",
-    user: "root",
-    password: "",
-    database: "testing2"
-};
-
-// pool = mysql.createPool(config);
-// pool.on('acquire', function (connection) {
-//     console.log('Connection %d acquired', connection.threadId);
-// });
-//
-// pool.on('release', function (connection) {
-//     console.log('Connection %d released', connection.threadId);
-// });
-//
-// exports.pool = pool;
-// exports.config = config;
-let connection = mysql.createConnection(config);
+let config = configuration.dbconfig;
+config.database = configuration.dbname;
 
 const waitFor = (ms) => new Promise(r => setTimeout(r, ms));
 
-handleDisconnect(connection);
+let connection;
 
-function handleDisconnect(client) {
-    client.on('error', function (error) {
-        if (!error.fatal) return;
-        if (error.code !== 'PROTOCOL_CONNECTION_LOST') throw err;
+function handleDisconnect() {
+    connection = mysql.createConnection(config); // Recreate the connection, since
+                                                    // the old one cannot be reused.
 
-        console.error('> Re-connecting lost MySQL connection: ' + error.stack);
-
-        // NOTE: This assignment is to a variable from an outer scope; this is extremely important
-        // If this said `client =` it wouldn't do what you want. The assignment here is implicitly changed
-        // to `global.mysqlClient =` in node.
-        connection = mysql.createConnection(client.config);
-        handleDisconnect(connection);
-        connection.connect();
+    connection.connect(function(err) {              // The server is either down
+        if(err) {                                     // or restarting (takes a while sometimes).
+            console.log('error when connecting to db:', err);
+            setTimeout(handleDisconnect, 2000); // We introduce a delay before attempting to reconnect,
+        }                                     // to avoid a hot loop, and to allow our node script to
+    });                                     // process asynchronous requests in the meantime.
+                                            // If you're also serving http, display a 503 error.
+    connection.on('error', function(err) {
+        console.log('db error', err);
+        if(err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
+            handleDisconnect();                         // lost due to either server restart, or a
+        } else {                                      // connnection idle timeout (the wait_timeout
+            throw err;                                  // server variable configures this)
+        }
     });
 }
+
+handleDisconnect();
 
 // connection.connect(function(err, callback) {
 //     if (err) {
@@ -100,35 +90,23 @@ exports.getAllProductsLarge = async function (table) {
 
 exports.addNewSeller = function (class_user, partnumber, price, instock, wholesale) {
     const sql = 'INSERT INTO pre_sellers(seller,vendor_code,price,instock,wholesale) VALUES (?)';
-    return new Promise(async (resolve, reject) => {
-        // pool.query(sql, [data], async function (err) {
-        //     if (err) console.log('SQL ', sql, ' addNewSeller Function ', err);
-        //     await console.log('Added new Seller ' + data);
-        //     resolve();
-        // });
+    return new Promise(async resolve => {
         await queryFunction(sql, [class_user, partnumber, price, instock, wholesale]);
         resolve()
     });
 };
 
 exports.addCodecat = async function (data) {
-    return new Promise(async (resolve, reject) => {
+    return new Promise(async resolve => {
         const sql = 'UPDATE pre_excel SET code_cat=' + data[1] + ' WHERE id = ' + data[0];
         console.log(sql);
-        // pool.query(sql, async function (err) {
-        //     if (err) console.log('SQL ', sql, ' Query Function ', err);
-        //     await console.log('ID ' + data[0] + ' code_cat ' + data[1]);
-        //     resolve();
-        // });
         await queryFunction(sql);
         resolve();
     });
 };
 
 exports.findPrices = function (excel_sql) {
-    return new Promise(async function (resolve, reject) {
-        // pool.query(excel_sql, async function (err, result) {
-        //     if (err) console.log('SQL ', sql, ' Query Function ', err);
+    return new Promise(async resolve => {
         let result = await queryFunction(excel_sql);
         await asyncForEach(result, async function (row) {
             // await waitFor(500);
@@ -139,10 +117,6 @@ exports.findPrices = function (excel_sql) {
                 'max_price = (SELECT MAX(price) FROM sellers WHERE vendor_code = ?) ' +
                 'WHERE vendor_code = ?';
 
-            // pool.query(sql, function (err, result) {
-            //     if (err) console.log('SQL ', sql, ' Query Function ', err);
-            //     console.log(sql);
-            // });
             console.log(partnumber);
             await queryFunction(sql, [partnumber, partnumber, partnumber, partnumber]);
         });
@@ -154,11 +128,6 @@ exports.addEmpty = function (id, partnumber) {
     const table = 'empty';
     const sql = 'INSERT INTO ' + table + '(id, vendor_code) VALUES (?)';
     return new Promise(async (resolve, reject) => {
-        // pool.query(sql, [data], async function (err) {
-        //     if (err) console.log('SQL ', sql, ' Query Function ', err);
-        //     console.log('Added Empty code ' + data);
-        //     resolve();
-        // });
         await queryFunction(sql, [id, partnumber]);
         resolve();
     });
@@ -174,16 +143,6 @@ exports.findLast = function (table) {
         } else {
             resolve(result);
         }
-        // pool.query(sql, function (err, results, fields) {
-        //     if (err) console.log('SQL ', sql, ' Query Function ', err);
-        //     const result = results[0][Object.keys(results[0])];
-        //     console.log("Finded " + result);
-        //     if (!result) {
-        //         resolve(1);
-        //     } else {
-        //         resolve(result);
-        //     }
-        // });
     });
 };
 

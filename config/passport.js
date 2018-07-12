@@ -1,34 +1,36 @@
 // load all the things we need
 const LocalStrategy = require('passport-local').Strategy;
 const sql = require('./../middlewares/database/database');
-// const pool = require('./../middlewares/database/database').pool;
 const mysql = require('mysql');
-// const connection = require('');
-let config = {
-    host: "localhost",
-    user: "root",
-    password: "",
-    database: "testing2"
-};
-let connection = mysql.createConnection(config);
+const configuration = require('./config');
 
-handleDisconnect(connection);
+let config = configuration.dbconfig;
+config.database = configuration.dbname;
 
-function handleDisconnect(client) {
-    client.on('error', function (error) {
-        if (!error.fatal) return;
-        if (error.code !== 'PROTOCOL_CONNECTION_LOST') throw err;
+let connection;
 
-        console.error('> Re-connecting lost MySQL connection: ' + error.stack);
+function handleDisconnect() {
+    connection = mysql.createConnection(config); // Recreate the connection, since
+    // the old one cannot be reused.
 
-        // NOTE: This assignment is to a variable from an outer scope; this is extremely important
-        // If this said `client =` it wouldn't do what you want. The assignment here is implicitly changed
-        // to `global.mysqlClient =` in node.
-        connection = mysql.createConnection(client.config);
-        handleDisconnect(connection);
-        connection.connect();
+    connection.connect(function(err) {              // The server is either down
+        if(err) {                                     // or restarting (takes a while sometimes).
+            console.log('error when connecting to db:', err);
+            setTimeout(handleDisconnect, 2000); // We introduce a delay before attempting to reconnect,
+        }                                     // to avoid a hot loop, and to allow our node script to
+    });                                     // process asynchronous requests in the meantime.
+                                            // If you're also serving http, display a 503 error.
+    connection.on('error', function(err) {
+        console.log('db error', err);
+        if(err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
+            handleDisconnect();                         // lost due to either server restart, or a
+        } else {                                      // connnection idle timeout (the wait_timeout
+            throw err;                                  // server variable configures this)
+        }
     });
 }
+handleDisconnect();
+
 module.exports = function (passport) {
 
     // serialize the user for the session
