@@ -8,7 +8,8 @@ const flash = require('connect-flash');
 const passportSocketIo = require('passport.socketio');
 const MySQLStore = require('connect-mysql')(session);
 
-const options = { config: require('./config/db').pool_config };
+const options = { config: require('./config/config').dbconfig };
+options.config.database = require('./config/config').dbname;
 
 const Server = require('http').Server;
 

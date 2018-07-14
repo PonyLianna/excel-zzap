@@ -1,5 +1,5 @@
 const nodemailer = require('nodemailer');
-const smtpConfig = require('../config/email').config;
+const smtpConfig = require('../config/config').emailConfig;
 
 async function asyncForEach(array, callback) {
     for (let index = 0; index < array.length; index++) {
@@ -8,20 +8,19 @@ async function asyncForEach(array, callback) {
 }
 
 async function send (email, subject, text, path) {
-    // console.log(smtpConfig.auth.emailUsername);
     let message = {
         from: smtpConfig.auth.user,
         to: email,
         subject: subject,
         text: text,
-        // attachments: [{
-        //     path: path
-        // }],
-        //
+        attachments: [{
+            path: path
+        }]
     };
 
     const transporter = await nodemailer.createTransport(smtpConfig);
     console.log(smtpConfig);
+
     transporter.sendMail(message, function(error, info){
         if (error) {
             console.log(error);

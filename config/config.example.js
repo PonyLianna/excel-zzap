@@ -13,9 +13,16 @@ config.dbconfig = {
 };
 
 /* EMAIL CONFIGURATION */
-// * If you want to change smtp server -> ./email.js
-config.emailUsername = '';
-config.emailPassword = '';
+config.emailConfig = {
+    service: "Yandex",
+    auth: {
+        user: '',
+        pass: ''
+    },
+    tls:{
+        rejectUnauthorized: false
+    }
+};
 
 /* SECRET FOR PASSPORT (change this please) */
 config.secret = 'mysecretispony';

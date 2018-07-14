@@ -23,8 +23,8 @@ exports.init = async function () {
 
         jobs[max] = new CronJob(time, async function () {
             await database.cleanTablesSocket();
-            await codecat.codecatTest('excel', 'sellers', await database.getAllProductsFilter());
-            await database.findPrices('SELECT vendor_code FROM excel');
+            await codecat.codecat();
+            await database.findPrices();
             if (spec == 0){
                 await mysql.delData((await exports.find(time)[0]).time);
             }
@@ -45,10 +45,10 @@ exports.add = function (time) {
 
     jobs[max] = new CronJob(newTime, async function () {
         await database.cleanTablesSocket();
-        await codecat.codecatTest('excel', 'sellers', await database.getAllProductsFilter());
-        await database.findPrices('SELECT vendor_code FROM excel');
+        await codecat.codecat();
+        await database.findPrices();
         console.log((await exports.find(time))[0].time);
-        if (spec == 0) {
+        if (!spec) {
             await mysql.delData((await exports.find(time))[0].time);
         }
         await socket.times();

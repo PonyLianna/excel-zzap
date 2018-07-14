@@ -1,6 +1,5 @@
 const zipzap = require('./../config/zipzap');
 const mysql = require('./database/database');
-const database = require('./database');
 const fs = require('fs');
 
 async function asyncForEach(array, callback) {
@@ -11,23 +10,6 @@ async function asyncForEach(array, callback) {
 
 let errCounter = 0;
 const waitFor = (ms) => new Promise(r => setTimeout(r, ms));
-
-exports.newcodecat = function () {
-    return new Promise(async (resolve, reject) => {
-        database.getExcel().then(async function (products) {
-            let time = (products.length * 3.4);
-            console.log('Общее время выполнения: ' + time + ' секунд');
-            await asyncForEach(products, async function (product, index, array) {
-                await waitFor(3400);
-                require('../app/socket').log(index, array);
-                await request(product.id, product.vendor_code, product.manufacturer, product.name);
-            });
-            await waitFor(4000);
-            resolve();
-        });
-    });
-};
-
 
 function request(id, partnumber, class_man, name) {
     return new Promise(async function (resolve, reject) {
@@ -45,7 +27,7 @@ function request(id, partnumber, class_man, name) {
     });
 }
 
-exports.codecat = function (io) {
+exports.codecat = function () {
     return new Promise(async (resolve, reject) => {
         mysql.getAllProducts().then(async function (products) {
             let time = (products.length * 3.4);
@@ -62,32 +44,32 @@ exports.codecat = function (io) {
     });
 };
 
-exports.codecatFilter = function (excelTable, sellersTable, io) {
-    return new Promise(async (resolve, reject) => {
-        mysql.getAllProductsLarge(excelTable).then(async function (products) {
-            let time = (products.length * 3.4);
-            console.log('Общее время выполнения: ' + time + ' секунд');
-            await asyncForEach(products, async function (product, index, array) {
-                await waitFor(3400);
-                require('../app/socket').log(index, array);
-                await request(product.id, product.vendor_code, product.manufacturer, excelTable, sellersTable);
-            });
-            await waitFor(4000);
-            resolve();
-        });
-    });
-};
-
-exports.codecatTest = function (excelTable, sellersTable, products) {
-    return new Promise(async (resolve, reject) => {
-        let time = (products.length * 3.4);
-        console.log('Общее время выполнения: ' + time + ' секунд');
-        await asyncForEach(products, async function (product, index, array) {
-            await waitFor(3400);
-            require('../app/socket').log(index, array);
-            await request(product.id, product.vendor_code, product.manufacturer, excelTable, sellersTable);
-        });
-        await waitFor(4000);
-        resolve();
-    });
-};
+// exports.codecatFilter = function (excelTable, sellersTable, io) {
+//     return new Promise(async (resolve, reject) => {
+//         mysql.getAllProductsLarge(excelTable).then(async function (products) {
+//             let time = (products.length * 3.4);
+//             console.log('Общее время выполнения: ' + time + ' секунд');
+//             await asyncForEach(products, async function (product, index, array) {
+//                 await waitFor(3400);
+//                 require('../app/socket').log(index, array);
+//                 await request(product.id, product.vendor_code, product.manufacturer, excelTable, sellersTable);
+//             });
+//             await waitFor(4000);
+//             resolve();
+//         });
+//     });
+// };
+//
+// exports.codecatTest = function (excelTable, sellersTable, products) {
+//     return new Promise(async (resolve, reject) => {
+//         let time = (products.length * 3.4);
+//         console.log('Общее время выполнения: ' + time + ' секунд');
+//         await asyncForEach(products, async function (product, index, array) {
+//             await waitFor(3400);
+//             require('../app/socket').log(index, array);
+//             await request(product.id, product.vendor_code, product.manufacturer, excelTable, sellersTable);
+//         });
+//         await waitFor(4000);
+//         resolve();
+//     });
+// };

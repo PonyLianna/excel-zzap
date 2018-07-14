@@ -25,14 +25,10 @@ module.exports = function (app, passport, io) {
         await waitFor(4000);
         await mysql.db_csv('main.csv', 'pre_excel');
         await waitFor(4000);
-        await codecat.codecat(io);
+        await codecat.codecat();
         await database.insertTables();
-        await database.findPrices('SELECT vendor_code FROM excel WHERE code_cat IS NOT NULL AND avg_price IS NULL');
+        await database.findPrices();
         await dataProcessing.export(await database.selectAll());
-    });
-
-    app.get('/admin', isAdmin, function (req, res) {
-        console.log('YOU\'RE ADMIN!');
     });
 
     app.get('/login', function (req, res) {
@@ -71,13 +67,13 @@ function isLoggedIn(req, res, next) {
     // if user is authenticated in the session, carry on
     if (req.isAuthenticated())
         return next();
-
     res.redirect('/login');
 }
 
-function isAdmin(req, res, next) {
-    console.log('Are u Admin?');
-    if (req.isAuthenticated() && req.user.super == '1')
-        return next();
-    res.redirect('/');
-}
+
+// function isAdmin(req, res, next) {
+//     console.log('Are u Admin?');
+//     if (req.isAuthenticated() && req.user.super == '1')
+//         return next();
+//     res.redirect('/');
+// }

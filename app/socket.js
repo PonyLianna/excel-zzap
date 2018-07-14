@@ -32,14 +32,15 @@ exports.main = function (io) { // DEFAULT FUNCTION
 
         socket.on('update', async function (time) {
             await database.cleanTablesSocket();
-            await codecat.codecatTest('excel', 'sellers', await database.getAllProductsFilter());
+            await codecat.codecat();
             await database.insertTables();
-            await database.findPrices('SELECT vendor_code FROM excel');
+            await database.findPrices();
+            socket.emit('message', 'Database was updated')
         });
 
         socket.on('delete', async function (time) {
             await manipulate.truncateAll();
-
+            socket.emit('message', 'Database was truncated')
             console.log('RECREATED');
         });
 

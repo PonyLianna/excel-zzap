@@ -1,5 +1,4 @@
 const mysql = require('mysql');
-// var mysql = require('mysql');
 const configuration = require('../../config/config');
 
 let config = configuration.dbconfig;
@@ -8,34 +7,26 @@ config.database = configuration.dbname;
 let connection;
 
 function handleDisconnect() {
-    connection = mysql.createConnection(config); // Recreate the connection, since
-    // the old one cannot be reused.
+    connection = mysql.createConnection(config);
 
-    connection.connect(function(err) {              // The server is either down
-        if(err) {                                     // or restarting (takes a while sometimes).
+    connection.connect(function (err) {
+        if (err) {
             console.log('error when connecting to db:', err);
-            setTimeout(handleDisconnect, 2000); // We introduce a delay before attempting to reconnect,
-        }                                     // to avoid a hot loop, and to allow our node script to
-    });                                     // process asynchronous requests in the meantime.
-                                            // If you're also serving http, display a 503 error.
-    connection.on('error', function(err) {
+            setTimeout(handleDisconnect, 2000);
+        }
+    });
+
+    connection.on('error', function (err) {
         console.log('db error', err);
-        if(err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
-            handleDisconnect();                         // lost due to either server restart, or a
-        } else {                                      // connnection idle timeout (the wait_timeout
-            throw err;                                  // server variable configures this)
+        if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+            handleDisconnect();
+        } else {
+            throw err;
         }
     });
 }
 
 handleDisconnect();
-
-// connection.connect(function () {
-//     console.log("Connected!");
-// });
-
-// let config = require('../../config/db').config;
-// const database = require('../../config/db').db;
 
 const excelColumn = '(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, ' +
     'manufacturer VARCHAR(20), ' +
@@ -48,8 +39,7 @@ const excelColumn = '(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, ' +
 
 const usersColumn = '(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, ' +
     'name VARCHAR(100) UNIQUE, ' +
-    'password VARCHAR(100), ' +
-    'super TINYINT(1) ZEROFILL)';
+    'password VARCHAR(100))';
 
 const sellersColumn = '(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, ' +
     'seller VARCHAR(255), ' +
@@ -61,11 +51,6 @@ const sellersColumn = '(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, ' +
 const emptyCodecat = '(id INT NOT NULL, ' +
     'vendor_code VARCHAR(100))';
 
-const temp = '(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, ' +
-    'manufacturer VARCHAR(20), ' +
-    'vendor_code VARCHAR(100), ' +
-    'name VARCHAR(255))';
-
 const times = '(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, ' +
     'time VARCHAR(50))';
 
@@ -74,24 +59,11 @@ const sessions = '(sid varchar(255) COLLATE utf8_unicode_ci NOT NULL,' +
     '  expires int(11) DEFAULT NULL,' +
     '  PRIMARY KEY (sid))';
 
-exports.test = function(){
-    return new Promise(resolve =>
-    {
-        connection.connect(function (err) {
-            if (err) throw err;
-            console.log("Connected!");
-            resolve();
-        });
-    })
-};
-
 let queryFunction = function (sql, info) {
-    return new Promise((resolve, reject) => {
-        const connection = mysql.createConnection(config);
+    return new Promise(async resolve => {
         connection.query(sql, [info], function (err, result, fields) {
-            connection.end();
-            if (err) console.log(config);
-            resolve(result);
+            if (err) console.log(err);
+            return resolve(result);
         });
     });
 };
@@ -105,33 +77,23 @@ async function createAll() {
     const sql = "CREATE DATABASE " + database + " CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
     console.log(sql);
     await setConnections();
+    queryFunction(sql).then(function () {
+            console.log(sql);
+            return Promise.all([
+                config.database = database,
+                create_table('excel', excelColumn),
+                create_table('pre_excel', excelColumn),
 
-    await create_db(sql).catch(function (err) {
-        console.log(123);
-    });
+                create_table('users', usersColumn),
+                create_table('sellers', sellersColumn),
+                create_table('pre_sellers', sellersColumn),
 
-    return Promise.all([
-        config.database = database,
-        create_table('excel', excelColumn),
-        create_table('pre_excel', excelColumn),
-        create_table('temp_excel', excelColumn),
-        create_table('users', usersColumn),
-        create_table('sellers', sellersColumn),
-        create_table('pre_sellers', sellersColumn),
-        create_table('temp', temp),
-        create_table('empty', emptyCodecat),
-        create_table('pre_empty', emptyCodecat),
-        create_table('times', times),
-        create_table('sessions', sessions)
-    ]);
-}
-
-function create_db(sql) {
-    return new Promise(async (resolve, reject) => {
-        await queryFunction(sql);
-        console.log(sql);
-        resolve();
-    });
+                create_table('empty', emptyCodecat),
+                create_table('pre_empty', emptyCodecat),
+                create_table('times', times),
+                create_table('sessions', sessions)
+            ]);
+        });
 }
 
 function setConnections() {
@@ -165,7 +127,6 @@ exports.destroy = function (my_table) {
 
 exports.truncate = function (my_table) {
     return new Promise(async (resolve, reject) => {
-        config.database = database;
         await queryFunction('truncate table ??', my_table);
         resolve();
     });
@@ -190,10 +151,10 @@ exports.db_csv = function (filename, tablename) {
     });
 };
 
-exports.createUser = function (name, password, admin = '0') {
-    const sql = 'INSERT INTO users(name,password,super) VALUES (?)';
+exports.createUser = function (name, password) {
+    const sql = 'INSERT INTO users(name,password) VALUES (?)';
     return new Promise(async (resolve, reject) => {
-        await queryFunction(sql, [name, password, admin]);
+        await queryFunction(sql, [name, password]);
         console.log('User: ' + name + ' ' + password + ' added!');
         console.log('Successful added');
         resolve();

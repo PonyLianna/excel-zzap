@@ -1,5 +1,4 @@
 const mysql = require('mysql');
-// const config = require('../../config/db').config;
 const configuration = require('../../config/config');
 
 let config = configuration.dbconfig;
@@ -7,43 +6,26 @@ config.database = configuration.dbname;
 
 const waitFor = (ms) => new Promise(r => setTimeout(r, ms));
 
-let connection;
-
 function handleDisconnect() {
-    connection = mysql.createConnection(config); // Recreate the connection, since
-                                                    // the old one cannot be reused.
-
-    connection.connect(function(err) {              // The server is either down
-        if(err) {                                     // or restarting (takes a while sometimes).
+    connection = mysql.createConnection(config);
+    connection.connect(function (err) {
+        if (err) {
             console.log('error when connecting to db:', err);
-            setTimeout(handleDisconnect, 2000); // We introduce a delay before attempting to reconnect,
-        }                                     // to avoid a hot loop, and to allow our node script to
-    });                                     // process asynchronous requests in the meantime.
-                                            // If you're also serving http, display a 503 error.
-    connection.on('error', function(err) {
+            setTimeout(handleDisconnect, 2000);
+        }
+    });
+
+    connection.on('error', function (err) {
         console.log('db error', err);
-        if(err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
-            handleDisconnect();                         // lost due to either server restart, or a
-        } else {                                      // connnection idle timeout (the wait_timeout
-            throw err;                                  // server variable configures this)
+        if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+            handleDisconnect();
+        } else {
+            throw err;
         }
     });
 }
 
 handleDisconnect();
-
-// connection.connect(function(err, callback) {
-//     if (err) {
-//         console.error('error connecting: ' + err.stack);
-//         return;
-//     }
-// });
-//
-// connection.end(function(err) {
-//     if(err) {
-//         console.log(err.message);
-//     }
-// });
 
 async function asyncForEach(array, callback) {
     for (let index = 0; index < array.length; index++) {
@@ -57,23 +39,12 @@ let queryFunction = function (sql, info) {
             if (err) console.log(err);
             return resolve(result);
         });
-        // pool.query(sql, info, async (err, results, fields) => {
-        //     // connection.release();
-        //     if (err) console.log('SQL ', sql, ' Query Function ', err);
-        //     //     setTimeout(queryFunction(sql, info));
-        //     // }
-        // return resolve(results);
     });
-
 };
 
 exports.queryFunction = queryFunction;
 exports.getUsers = async function () {
     const sql = 'SELECT name, password FROM users';
-    // pool.query(sql, function (err, result, fields) {
-    //     if (err) console.log('SQL ', sql, ' getUser Function ', err);
-    //     console.log(result[0].name + ' ' + result[0].password);
-    // });
     return await queryFunction(sql)
 };
 
@@ -105,20 +76,20 @@ exports.addCodecat = async function (data) {
     });
 };
 
-exports.findPrices = function (excel_sql) {
+exports.findPrices = function () {
     return new Promise(async resolve => {
-        let result = await queryFunction(excel_sql);
+        let result = await queryFunction('SELECT vendor_code FROM excel');
         await asyncForEach(result, async function (row) {
-            // await waitFor(500);
             const partnumber = row.vendor_code;
+
             const sql = 'UPDATE excel SET ' +
-                'min_price = (SELECT MIN(price) FROM sellers WHERE vendor_code = ?), ' +
-                'avg_price = (SELECT AVG(price) FROM sellers WHERE vendor_code = ?), ' +
-                'max_price = (SELECT MAX(price) FROM sellers WHERE vendor_code = ?) ' +
-                'WHERE vendor_code = ?';
+                `min_price = (SELECT MIN(price) FROM sellers WHERE vendor_code = "${partnumber}"), ` +
+                `avg_price = (SELECT AVG(price) FROM sellers WHERE vendor_code = "${partnumber}"), ` +
+                `max_price = (SELECT MAX(price) FROM sellers WHERE vendor_code = "${partnumber}") ` +
+                `WHERE vendor_code = "${partnumber}"`;
 
             console.log(partnumber);
-            await queryFunction(sql, [partnumber, partnumber, partnumber, partnumber]);
+            await queryFunction(sql);
         });
         resolve();
     });

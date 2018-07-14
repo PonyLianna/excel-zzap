@@ -1,7 +1,7 @@
 const request = require('request');
 const mysql = require('./../middlewares/database/database');
 const api_key = require('./config').api_key;
-// const database = require('../middlewares/database');
+
 exports.GetSearchResultV2 = function (id, partnumber, class_man, name) {
     const options = {
         uri: 'https://www.zzap.ru/webservice/datasharing.asmx/GetSearchResultV2',
@@ -59,36 +59,6 @@ exports.GetSearchResultV2 = function (id, partnumber, class_man, name) {
                     }
                 }
             }
-            // .catch(async function(err){
-            //     console.log('Whou! It seems like an error. Restart request.');
-            //     console.log(err.message);
-            //     exports.GetSearchResultV2(id, partnumber, class_man, name);
-            // })
         );
     });
-    // return new Promise((resolve, reject) => {
-    //     request(options, async function (err, response) {
-    //         if (err) throw err;
-    //         const parsed = JSON.parse(response.body.d).table;
-    //         try {
-    //             await database.addCodecat(id, parsed[0].codecat);
-    //             parsed.forEach(async function (table) {
-    //                 if (table.local) {
-    //                     await database.addNewSeller(table.class_user, partnumber,
-    //                         table.price.replace('p.', '').replace(' ', ''),
-    //                         parsed[0].instock, parsed[0].wholesale)
-    //                 } else {
-    //                     console.log(`${table.class_user} is non-local!`);
-    //                 }
-    //                 resolve();
-    //             });
-    //         } catch (err) {
-    //             console.log(`ID ${id} is empty!`);
-    //             console.log(JSON.parse(response.body.d).error);
-    //             if (JSON.parse(response.body.d).error) {
-    //                 return reject(response.body.d.error);
-    //             }
-    //         }
-    //     })
-    // })
 };
