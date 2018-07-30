@@ -18,11 +18,28 @@
 //
 // start();
 const email = require('../middlewares/postman');
+const CronJob = require('cron').CronJob;
 
-async function start(){
-    await email.sendMail('test', 'Excel ' + new Date(), '', __dirname + '/../final/final.xlsx');
+// async function start() {
+//     await email.sendMail('test', 'Excel ' + new Date(), '', __dirname + '/../final/final.xlsx');
+// }
+//
+// start();
+
+let jobs = '';
+max = 0;
+
+function create_new_instance(time, message) {
+    jobs[max] = new CronJob(time, async function () {
+        console.log(message)
+    }, null, true);
+    max += 1;
 }
-start();
+
+create_new_instance("30 * * * * *", 1);
+create_new_instance("20 * * * * *", 2);
+create_new_instance("10 * * * * *", 3);
+create_new_instance("05 * * * * *", 4);
 
 // async function start() {
 //     await database.findPrices();

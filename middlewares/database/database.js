@@ -131,7 +131,7 @@ exports.selectSellerFilter = async function (codename, instock, wholesale) { // 
     return await queryFunction('SELECT seller, price FROM sellers ' +
         'WHERE vendor_code = "' + codename +
         '" AND instock = ' + instock +
-        ' AND wholesale = ' + wholesale); // Problems with quotes
+        ' AND wholesale = ' + wholesale);
 };
 
 exports.selectSellers = async function () {
@@ -142,9 +142,17 @@ exports.insertTables = function () {
     return new Promise(async (resolve, reject) => {
         await queryFunction('INSERT INTO excel(manufacturer, vendor_code, name, code_cat, ' +
             'min_price, avg_price, max_price) SELECT manufacturer, vendor_code, ' +
-            'name, code_cat, min_price, avg_price, max_price FROM pre_excel');
+            'name, code_cat, min_price, avg_price, max_price FROM pre_excel' +
+            'ON DUPLICATE KEY UPDATE manufacturer=pre_excel.manufacturer,' +
+            'vendor_code=pre_excel.vendor_code, name=pre_excel.name,' +
+            'code_cat=pre_excel.code_cat, min_price=pre_excel.min_price,' +
+            'avg_price=pre_excel.avg_price, max_price=pre_excel.max_price');
+
         await queryFunction('INSERT INTO sellers(seller, vendor_code, price, instock, wholesale) SELECT seller, ' +
-            'vendor_code, price, instock, wholesale FROM pre_sellers');
+            'vendor_code, price, instock, wholesale FROM pre_sellers ON DUPLICATE KEY UPDATE ' +
+            'seller=pre_sellers.seller, vendor_code=pre_sellers.vendor_code, price=pre_sellers.price,' +
+            'instock=pre_sellers.instock, wholesale=pre_sellers.wholesale');
+
         console.log('INSERTED to real');
         resolve();
     });

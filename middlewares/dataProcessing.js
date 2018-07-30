@@ -1,5 +1,4 @@
 const mysql = require('./database/database');
-const database = require('./database');
 const xlsx = require('xlsx');
 
 const name = "sheetjs";

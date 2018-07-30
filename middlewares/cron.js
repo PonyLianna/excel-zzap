@@ -25,9 +25,7 @@ exports.init = async function () {
             await database.cleanTablesSocket();
             await codecat.codecat();
             await database.findPrices();
-            if (spec == 0){
-                await mysql.delData((await exports.find(time)[0]).time);
-            }
+            if (!spec) await mysql.delData((await exports.find(time)[0]).time);
             await socket.times();
         }, null, true);
     });
@@ -36,6 +34,7 @@ exports.init = async function () {
 exports.add = function (time) {
     let newTime = '';
     let spec = 0;
+
     newTime = new Date(time);
 
     if (newTime == 'Invalid Date') {
@@ -48,9 +47,7 @@ exports.add = function (time) {
         await codecat.codecat();
         await database.findPrices();
         console.log((await exports.find(time))[0].time);
-        if (!spec) {
-            await mysql.delData((await exports.find(time))[0].time);
-        }
+        if (!spec) await mysql.delData((await exports.find(time))[0].time);
         await socket.times();
     }, null, true);
     max += 1;
