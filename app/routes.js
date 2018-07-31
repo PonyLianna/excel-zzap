@@ -22,9 +22,7 @@ module.exports = function (app, passport, io) {
         const filename = await myfile.readExcel(req, res); //, time
         res.end('File has uploaded');
         await excel.csv(filename, 'main.csv');
-        await waitFor(4000);
         await mysql.db_csv('main.csv', 'pre_excel');
-        await waitFor(4000);
         await codecat.codecat();
         await database.insertTables();
         await database.findPrices();
@@ -69,11 +67,3 @@ function isLoggedIn(req, res, next) {
         return next();
     res.redirect('/login');
 }
-
-
-// function isAdmin(req, res, next) {
-//     console.log('Are u Admin?');
-//     if (req.isAuthenticated() && req.user.super == '1')
-//         return next();
-//     res.redirect('/');
-// }

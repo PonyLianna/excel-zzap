@@ -129,8 +129,8 @@ exports.selectSeller = async function (codename) { // vendor_code
 
 exports.selectSellerFilter = async function (codename, instock, wholesale) { // vendor_code
     return await queryFunction('SELECT seller, price FROM sellers ' +
-        'WHERE vendor_code = "' + codename +
-        '" AND instock = ' + instock +
+        'WHERE vendor_code = \'' + codename +
+        '\' AND instock = ' + instock +
         ' AND wholesale = ' + wholesale);
 };
 
@@ -171,6 +171,7 @@ exports.cleanTables = async function () {
 exports.cleanTablesSocket = async function () {
     return new Promise(async (resolve, reject) => {
         await queryFunction('TRUNCATE TABLE sellers');
+        await queryFunction('TRUNCATE TABLE excel');
         await queryFunction('TRUNCATE TABLE empty');
         resolve();
     });

@@ -1,6 +1,7 @@
 const cron = require('../middlewares/cron');
 const email = require('../middlewares/postman');
 const mysql = require('../middlewares/database/databaseSocket');
+const init = require('../middlewares/database/init');
 const database = require('../middlewares/database/database');
 const manipulate = require('../middlewares/database/databaseManipulate');
 const codecat = require('../middlewares/codecat');
@@ -32,6 +33,7 @@ exports.main = function (io) { // DEFAULT FUNCTION
 
         socket.on('update', async function (time) {
             await database.cleanTablesSocket();
+            await init.db_csv('main.csv', 'pre_excel');
             await codecat.codecat();
             await database.insertTables();
             await database.findPrices();
