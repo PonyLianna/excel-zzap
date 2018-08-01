@@ -37,14 +37,16 @@ exports.GetSearchResultV2 = function (id, partnumber, class_man, name) {
                 try {
                     await mysql.addCodecat([id, parsed[0].code_cat]);
                     await asyncForEach(parsed, async function (table) {
-                        if (table.local) {
-                            await mysql.addNewSeller(table.class_user, partnumber,
-                                table.price.replace('р.', '').replace(' ', ''),
-                                parsed[0].instock, parsed[0].wholesale);
-                        } else {
-                            await console.log(table.class_user + ' is non-local!');
-                        }
-                        resolve();
+                    if (table.local) {
+                        await mysql.addNewSeller(table.class_user, partnumber,
+                            table.price.replace('р.', '').replace(' ', ''),
+                            table.instock, table.wholesale);
+                        // console.log(parsed[0].instock);
+                        // console.log(parsed[0].wholesale);
+                    } else {
+                        await console.log(table.class_user + ' is non-local!');
+                    }
+                    resolve();
                     });
                 }
                 catch (err) {

@@ -20,6 +20,7 @@
 const email = require('../middlewares/postman');
 const CronJob = require('cron').CronJob;
 const database = require('../middlewares/database/database');
+const zipzap = require('../config/zipzap');
 // async function start() {
 //     await email.sendMail('test', 'Excel ' + new Date(), '', __dirname + '/../final/final.xlsx');
 // }
@@ -27,8 +28,9 @@ const database = require('../middlewares/database/database');
 // start();
 async function start() {
     // database.insertTables();
-    await database.findPrices();
-    console.log(123)
+    await zipzap.GetSearchResultV2(4,'NR20249', 'Nord', '')
+    // await database.findPrices();
+    // console.log(123)
     // all = await database.selectAll();
     // all.map(async(element)=>{
     //     console.log(element)

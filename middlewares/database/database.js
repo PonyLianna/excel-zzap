@@ -79,8 +79,8 @@ exports.addCodecat = async function (data) {
 exports.findPrices = function () {
     return new Promise(async resolve => {
         let result = await queryFunction('SELECT vendor_code FROM excel');
-        // await asyncForEach(result, async function (row) {
-        await Promise.all(result.map(async (row) => {
+        await asyncForEach(result, async function (row) {
+        // await Promise.all(result.map(async (row) => {
             const partnumber = row.vendor_code;
 
             const sql = 'UPDATE excel SET ' +
@@ -92,7 +92,7 @@ exports.findPrices = function () {
             console.log(partnumber);
             await queryFunction(sql);
             // });
-        }));
+        });
         resolve();
     });
 };
