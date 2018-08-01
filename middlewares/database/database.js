@@ -79,7 +79,8 @@ exports.addCodecat = async function (data) {
 exports.findPrices = function () {
     return new Promise(async resolve => {
         let result = await queryFunction('SELECT vendor_code FROM excel');
-        await asyncForEach(result, async function (row) {
+        // await asyncForEach(result, async function (row) {
+        await Promise.all(result.map(async (row) => {
             const partnumber = row.vendor_code;
 
             const sql = 'UPDATE excel SET ' +
@@ -90,7 +91,8 @@ exports.findPrices = function () {
 
             console.log(partnumber);
             await queryFunction(sql);
-        });
+            // });
+        }));
         resolve();
     });
 };
@@ -118,8 +120,6 @@ exports.findLast = function (table) {
 };
 
 exports.selectAll = async function () {
-    await waitFor(2000);
-    console.log(123);
     return await queryFunction('SELECT * FROM excel');
 };
 
@@ -142,7 +142,7 @@ exports.insertTables = function () {
     return new Promise(async (resolve, reject) => {
         await queryFunction('INSERT INTO excel(manufacturer, vendor_code, name, code_cat, ' +
             'min_price, avg_price, max_price) SELECT manufacturer, vendor_code, ' +
-            'name, code_cat, min_price, avg_price, max_price FROM pre_excel' +
+            'name, code_cat, min_price, avg_price, max_price FROM pre_excel ' +
             'ON DUPLICATE KEY UPDATE manufacturer=pre_excel.manufacturer,' +
             'vendor_code=pre_excel.vendor_code, name=pre_excel.name,' +
             'code_cat=pre_excel.code_cat, min_price=pre_excel.min_price,' +

@@ -19,27 +19,39 @@
 // start();
 const email = require('../middlewares/postman');
 const CronJob = require('cron').CronJob;
-
+const database = require('../middlewares/database/database');
 // async function start() {
 //     await email.sendMail('test', 'Excel ' + new Date(), '', __dirname + '/../final/final.xlsx');
 // }
 //
 // start();
-
-let jobs = '';
-max = 0;
-
-function create_new_instance(time, message) {
-    jobs[max] = new CronJob(time, async function () {
-        console.log(message)
-    }, null, true);
-    max += 1;
+async function start() {
+    // database.insertTables();
+    await database.findPrices();
+    console.log(123)
+    // all = await database.selectAll();
+    // all.map(async(element)=>{
+    //     console.log(element)
+    // })
+    // console.log(await database.selectSellerFilter('8834',1,0))
 }
+start();
 
-create_new_instance("30 * * * * *", 1);
-create_new_instance("20 * * * * *", 2);
-create_new_instance("10 * * * * *", 3);
-create_new_instance("05 * * * * *", 4);
+
+// let jobs = '';
+// max = 0;
+//
+// function create_new_instance(time, message) {
+//     jobs[max] = new CronJob(time, async function () {
+//         console.log(message)
+//     }, null, true);
+//     max += 1;
+// }
+//
+// create_new_instance("30 * * * * *", 1);
+// create_new_instance("20 * * * * *", 2);
+// create_new_instance("10 * * * * *", 3);
+// create_new_instance("05 * * * * *", 4);
 
 // async function start() {
 //     await database.findPrices();

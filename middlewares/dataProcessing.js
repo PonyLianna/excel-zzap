@@ -49,44 +49,28 @@ async function read(zero) {
     });
 }
 
-async function altRead(zero, instock, wholesale) {
-    return new Promise(async function (resolve, reject) {
-        let arr = [];
+async function alternativeRead(exportFrom, instock, wholesale){
+    return new Promise(async function(resolve){
+        console.log(1);
+        // let arr = await database.getExcel();
         let processed = 0;
-        console.log(zero);
-
-        await Promise.all(zero.map(async (value) => {
-            let seller = await mysql.selectSellerFilter(value.vendor_code, instock, wholesale);
-            if (seller) {
-                console.log(1);
+        await Promise.all(exportFrom.map(async (item) => {
+            console.log(processed);
+            let seller = await mysql.selectSellerFilter(item.vendor_code, instock, wholesale);
+            if (seller.length){
                 seller.forEach(function (value) {
-                    arr[processed][value.seller] = value.price;
+                    console.log(value);
+                    exportFrom[processed][value.seller] = value.price;
                 });
-                processed++;
-                if (processed === arr.length) {
-                    console.log('Finished');
-                    resolve(arr);
-                }
+            }
+            processed++;
+            if (processed === exportFrom.length){
+                console.log('Finished');
+                console.log(exportFrom);
+                resolve(exportFrom);
             }
         }))
-        // await asyncForEach(zero, async function(value, i){
-        //     waitFor(10);
-        //     let seller = await mysql.selectSellerFilter(value.vendor_code, instock, wholesale);
-        //     if (seller) {
-        //         console.log(1);
-        //         await seller.forEach(function (value) {
-        //             let sell = value.seller;
-        //             let num = value.price;
-        //             myzero[i][sell] = num;
-        //         });
-        //     }
-        //     processed++;
-        //     if (processed === zero.length){
-        //         console.log('Finished');
-        //         resolve(myzero);
-        //     }
-        // });
-    });
+    })
 }
 
 exports.export = async function (exportFrom) {
@@ -95,11 +79,11 @@ exports.export = async function (exportFrom) {
 };
 
 exports.altExport = async function (exportFrom, instock, wholesale) {
-    let data = await altRead(exportFrom, instock, wholesale);
+    let data = await alternativeRead(exportFrom, instock, wholesale);
     return await save(name, filename, data);
 };
 
-exports.newExport = async function (instock, wholesale) {
-    let data = await alternativeRead(instock, wholesale);
-    return await save(name, filename, data);
-};
+// exports.newExport = async function (instock, wholesale) {
+//     let data = await alternativeRead(instock, wholesale);
+//     return await save(name, filename, data);
+// };
