@@ -87,6 +87,12 @@ $(document).ready(function () {
         socket.emit('delete', time);
     });
 
+    $('#percentage').click(function (e) {
+        e.preventDefault();
+        const time = new Date();
+        socket.emit('update', time);
+    });
+
     $(document).on('click', 'a.secondary-content', function (e) {
         const time = $(this).siblings('span').text();
         socket.emit('time_del', time);

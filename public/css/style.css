@@ -24,8 +24,9 @@
 }
 
 #info {
-    height: 300px;
-    max-height: 300px;
+    margin-top: 12px;
+    height: 250px;
+    max-height: 250px;
     overflow: scroll;
     overflow-x: hidden;
 }
@@ -36,12 +37,12 @@
     overflow-x: hidden;
 }
 #send{
-    margin-top: 20px;
+    margin-top: 6px;
+    margin-bottom: 12px;
 }
 
 .row:first-child{
-    margin: 25px 10px;
+    /*margin: 25px 10px;*/
+    margin-left: 10px;
+    margin-bottom: 60px;
 }
-/*.datepicker-date-display, .datepicker-controls {*/
-    /*display: none;*/
-/*}*/

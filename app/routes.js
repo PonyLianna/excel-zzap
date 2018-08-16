@@ -20,14 +20,14 @@ module.exports = function (app, passport, io) {
         await database.cleanTables();
         // const time = Date.now().toString();
         const filename = await myfile.readExcel(req, res); //, time
-        res.end('File has uploaded');
         await excel.csv(filename, 'main.csv');
         await waitFor(5000);
-        await mysql.db_csv('main.csv', 'pre_excel');
-        await codecat.codecat();
-        await database.insertTables();
-        await database.findPrices();
-        await dataProcessing.export(await database.selectAll());
+        res.end('Файл загружен');
+        // await mysql.db_csv('main.csv', 'pre_excel');
+        // await codecat.codecat();
+        // await database.insertTables();
+        // await database.findPrices();
+        // await dataProcessing.export(await database.selectAll());
     });
 
     app.get('/login', function (req, res) {
