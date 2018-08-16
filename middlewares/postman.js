@@ -31,10 +31,12 @@ async function send (email, subject, text, path) {
 }
 
 exports.sendMail = async function(emailList, subject, text, path){
-    await asyncForEach(emailList.split(','), async function (email) {
-        await send(email, subject, text, path);
-        console.log(email);
-
+    return new Promise(async resolve=>{
+        await asyncForEach(emailList.split(','), async function (email) {
+            await send(email, subject, text, path);
+            console.log(email);
+        });
+        console.log('Email ended!');
+        resolve()
     });
-    console.log('Email ended!');
 };

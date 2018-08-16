@@ -35,7 +35,13 @@
     overflow: scroll;
     overflow-x: hidden;
 }
+#send{
+    margin-top: 20px;
+}
 
+.row:first-child{
+    margin: 25px 10px;
+}
 /*.datepicker-date-display, .datepicker-controls {*/
     /*display: none;*/
 /*}*/

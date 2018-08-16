@@ -84,9 +84,9 @@ exports.findPrices = function () {
             const partnumber = row.vendor_code;
 
             const sql = 'UPDATE excel SET ' +
-                `min_price = (SELECT MIN(price) FROM sellers WHERE vendor_code = "${partnumber}"), ` +
-                `avg_price = (SELECT AVG(price) FROM sellers WHERE vendor_code = "${partnumber}"), ` +
-                `max_price = (SELECT MAX(price) FROM sellers WHERE vendor_code = "${partnumber}") ` +
+                `min_price = (SELECT MIN(price) FROM sellers WHERE vendor_code = \"${partnumber}\"), ` +
+                `avg_price = (SELECT AVG(price) FROM sellers WHERE vendor_code = \"${partnumber}\"), ` +
+                `max_price = (SELECT MAX(price) FROM sellers WHERE vendor_code = \"${partnumber}\") ` +
                 `WHERE vendor_code = "${partnumber}"`;
 
             console.log(partnumber);
@@ -129,8 +129,8 @@ exports.selectSeller = async function (codename) { // vendor_code
 
 exports.selectSellerFilter = async function (codename, instock, wholesale) { // vendor_code
     return await queryFunction('SELECT seller, price FROM sellers ' +
-        'WHERE vendor_code = \'' + codename +
-        '\' AND instock = ' + instock +
+        'WHERE vendor_code = \"' + codename +
+        '\" AND instock = ' + instock +
         ' AND wholesale = ' + wholesale);
 };
 

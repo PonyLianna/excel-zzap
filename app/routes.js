@@ -22,6 +22,7 @@ module.exports = function (app, passport, io) {
         const filename = await myfile.readExcel(req, res); //, time
         res.end('File has uploaded');
         await excel.csv(filename, 'main.csv');
+        await waitFor(5000);
         await mysql.db_csv('main.csv', 'pre_excel');
         await codecat.codecat();
         await database.insertTables();

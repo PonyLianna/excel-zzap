@@ -46,7 +46,7 @@ $(document).ready(function () {
         e.preventDefault();
         $(this).ajaxSubmit({
             success: function (answer) {
-                $('div#info').append(
+                $('div#info').prepend(
                     '<div>' + answer + '</div>');
             },
             error: function (answer) {

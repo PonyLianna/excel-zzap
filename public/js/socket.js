@@ -1,16 +1,17 @@
 $(document).ready(function () {
     let socket = io.connect('http://localhost:8080');
     socket.on('message', function (data) {
-        $('#info').append('<p>' + data + '</p>');
+        $('#info').prepend('<p>' + data + '</p>');
     });
 
     socket.on('codecat', function (data) {
         let percent = 100/data.length;
 
-        $('#info').append('<p>' + data.time + '</p>');
+        $('#info').prepend('<p>' + data.time + '</p>');
         if ((data.length > data.now) && ($('#process').hasClass('disabled'))) {
             $(".progress.determinate").width('0%');
-            $('#date').text(data.time);
+
+            $('#date').text(new Date(data.startTime).toLocaleString('ru'));
             $("p#progress").text("1 / " + data.length);
 
             $("#preload-window").show("fast");
@@ -38,8 +39,8 @@ $(document).ready(function () {
         console.log(data);
         $('.collection').empty();
         data.forEach(function (one_data) {
-            $('.collection').append('<li class="collection-item"><span>' + one_data.time + '</span><a class="secondary-content">' +
-                'Delete</a></li>');
+            $('.collection').prepend('<li class="collection-item"><span>' + one_data.time + '</span><a class="secondary-content">' +
+                'удалить</a></li>');
         });
     });
 
@@ -59,7 +60,7 @@ $(document).ready(function () {
         }
         socket.emit('time', myTime);
         console.log(myTime);
-        $('.collection').append('<li class="collection-item z-depth-1"><span>' + myTime + '</span><a class="secondary-content">Delete</a>' +
+        $('.collection').prepend('<li class="collection-item z-depth-1"><span>' + myTime + '</span><a class="secondary-content">удалить</a>' +
             '</li>');
     });
 
@@ -71,7 +72,7 @@ $(document).ready(function () {
             'email': $('#email').val()
         };
         socket.emit('data', data);
-        console.log('Sended');
+        $('#info').prepend('<p>Сообщение отправляется...</p>');
     });
 
     $('#update').click(function (e) {
