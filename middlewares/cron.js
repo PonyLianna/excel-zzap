@@ -2,7 +2,7 @@ const CronJob = require('cron').CronJob;
 const mysql = require('./database/databaseSocket');
 const codecat = require('../middlewares/codecat');
 const database = require('./database/database');
-const init = require('../database/init');
+const init = require('./database/init');
 const socket = require('../app/socket');
 
 let max = 0;
