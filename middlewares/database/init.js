@@ -31,7 +31,7 @@ handleDisconnect();
 const excelColumn = '(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, ' +
     'manufacturer VARCHAR(20), ' +
     'vendor_code VARCHAR(100), ' +
-    'name VARCHAR(255), ' +
+    'name VARCHAR(255) NOT NULL UNIQUE, ' +
     'code_cat VARCHAR(20), ' +
     'min_price DECIMAL(10,2), ' +
     'avg_price DECIMAL(10,2), ' +
