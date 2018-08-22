@@ -2,7 +2,9 @@ const CronJob = require('cron').CronJob;
 const mysql = require('./database/databaseSocket');
 const codecat = require('../middlewares/codecat');
 const database = require('./database/database');
+const init = require('../database/init');
 const socket = require('../app/socket');
+
 let max = 0;
 let jobs = {};
 
@@ -23,6 +25,7 @@ exports.init = async function () {
 
         jobs[max] = new CronJob(time, async function () {
             await database.cleanTablesSocket();
+            await init.db_csv('main.csv', 'pre_excel');
             await codecat.codecat();
             await database.findPrices();
             if (!spec) await mysql.delData((await exports.find(time)[0]).time);
@@ -44,6 +47,7 @@ exports.add = function (time) {
 
     jobs[max] = new CronJob(newTime, async function () {
         await database.cleanTablesSocket();
+        await init.db_csv('main.csv', 'pre_excel');
         await codecat.codecat();
         await database.findPrices();
         console.log((await exports.find(time))[0].time);
