@@ -27,6 +27,7 @@ exports.init = async function () {
             await database.cleanTablesSocket();
             await init.db_csv('main.csv', 'pre_excel');
             await codecat.codecat();
+            await database.insertTables();
             await database.findPrices();
             if (!spec) await mysql.delData((await exports.find(time)[0]).time);
             await socket.times();
@@ -49,6 +50,7 @@ exports.add = function (time) {
         await database.cleanTablesSocket();
         await init.db_csv('main.csv', 'pre_excel');
         await codecat.codecat();
+        await database.insertTables();
         await database.findPrices();
         console.log((await exports.find(time))[0].time);
         if (!spec) await mysql.delData((await exports.find(time))[0].time);

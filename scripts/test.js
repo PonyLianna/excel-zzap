@@ -28,25 +28,30 @@ const zipzap = require('../config/zipzap');
 // }
 //
 // start();
-const waitFor = (ms) => new Promise(r => setTimeout(r, ms));
-async function start() {
-    // database.insertTables();
-    // await zipzap.GetSearchResultV2(4,'NR20249', 'Nord', '')
-    await database.cleanTables();
-    await excel.csv('main.xls', 'main.csv');
-    await waitFor(8000);
-    await mysql.db_csv('main.csv', 'pre_excel');
-
-    // await database.findPrices();
-    // console.log(123)
-    // all = await database.selectAll();
-    // all.map(async(element)=>{
-    //     console.log(element)
-    // })
-    // console.log(await database.selectSellerFilter('8834',1,0))
+// const waitFor = (ms) => new Promise(r => setTimeout(r, ms));
+// async function start() {
+//     // database.insertTables();
+//     // await zipzap.GetSearchResultV2(4,'NR20249', 'Nord', '')
+//     await database.cleanTables();
+//     await excel.csv('main.xls', 'main.csv');
+//     await waitFor(8000);
+//     await mysql.db_csv('main.csv', 'pre_excel');
+//
+//     // await database.findPrices();
+//     // console.log(123)
+//     // all = await database.selectAll();
+//     // all.map(async(element)=>{
+//     //     console.log(element)
+//     // })
+//     // console.log(await database.selectSellerFilter('8834',1,0))
+// }
+// start();
+async function test() {
+    await database.insertTables();
+    await database.findPrices();
 }
-start();
 
+test();
 
 // let jobs = '';
 // max = 0;
