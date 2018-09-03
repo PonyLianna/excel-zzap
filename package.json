@@ -28,8 +28,8 @@
     "configure": "node ./scripts/configure.js",
     "start": "node start.js",
     "destroyEverything": "node ./scripts/destroyEverything.js",
-    "recreate": "npm run destroyEverything && npm run configure && npm run csv && npm run createAdmin",
-    "create": "npm run configure && npm run csv && npm run createAdmin",
+    "recreate": "npm run destroyEverything && npm run createdb && npm run configure && npm run createAdmin",
+    "create": "npm run createdb && npm run configure && npm run createAdmin",
     "convert": "node ./scripts/convert.js",
     "csv": "node ./scripts/paste.js",
     "createAdmin": "node ./scripts/createAdmin.js",
@@ -37,6 +37,7 @@
     "addUser": "node ./scripts/addUser.js",
     "deleteUser": "node ./scripts/deleteUser.js",
     "fixSession": "node ./scripts/fixSession.js",
+    "createdb": "node ./scripts/createDB.js",
     "test": "node ./scripts/test.js"
   },
   "author": "PonyLianna",
