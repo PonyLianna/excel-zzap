@@ -7,3 +7,6 @@ package-lock.json
 /scripts/createtable.js
 /middlewares/sequelize
 /config/config.js
+/models
+/routes
+models
