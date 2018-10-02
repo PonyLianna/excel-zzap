@@ -14,18 +14,28 @@ config.dbconfig = {
 
 /* EMAIL CONFIGURATION */
 config.emailConfig = {
+    //  при использовании service
     service: "Yandex",
+    
+    //  при использовании напрямую smtp
+    //  host: 'my.smtp.host', 
+    //  port: 465,
+    //  secure: true, // использование TLS
+    
+    // аутентификация обязательна
     auth: {
         user: '',
         pass: ''
     },
-    tls:{
-        rejectUnauthorized: false
-    }
+    
+    // при отсутствии параметра secure не имеет какого-либо смысла
+    //     tls:{
+    //         rejectUnauthorized: false
+    //     }
 };
 
 /* SECRET FOR PASSPORT (change this please) */
-config.secret = 'mysecretispony';
+config.secret = 'mysecretisapony';
 
 /* ZZAP CONFIGURATION */
 config.api_key = '';
