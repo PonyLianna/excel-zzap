@@ -32,6 +32,13 @@ config.emailConfig = {
     //     tls:{
     //         rejectUnauthorized: false
     //     }
+    
+    // для exchange
+    //     tls:{
+    //         ciphers: 'SSLv3'
+    //     }
+    
+    
 };
 
 /* SECRET FOR PASSPORT (change this please) */
