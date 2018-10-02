@@ -44,7 +44,6 @@ NPM автоматически установит все зависимости 
 
 **Frontend**
 
- [`./config/config.js`](https://github.com/PonyLianna/excel-zzap/blob/master/config/config.example.js)
 [`./public/js/socket.js`](https://github.com/PonyLianna/excel-zzap/blob/master/public/js/socket.js) - так как при создании проекта не был использован фронтфреймворк, то осталась особенность изменений внутри файлов фронта информации вручную (нужно поменять порт при отличии со стандартного `8080`)
 
 ### Запуск Сервера
