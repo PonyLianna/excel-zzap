@@ -62,7 +62,9 @@ exports.main = function (io) { // DEFAULT FUNCTION
         socket.on('data', async function (message) {
             console.log(message);
             await proc.altExport(await database.selectAll(), message.instock, message.wholesale);
-            await email.sendMail(message.email, 'Excel ' + new Date(), '', __dirname + '/../final/final.xlsx');
+            await email.sendMail(message.email, 'Excel ' + new Date(), '',
+                `${require('../config/config').finalExcel.path}\\
+                ${require('../config/config').finalExcel.name}.xlsx`);
             socket.emit('message', `Сообщение с параметрами: '${message.instock?"В наличии":"Под заказ"}, 
                         ${message.wholesale?"В розницу":"Оптом"}' отправлено на email: ${message.email}`)
         });

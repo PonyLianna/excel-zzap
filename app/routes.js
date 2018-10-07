@@ -11,6 +11,7 @@ const waitFor = (ms) => new Promise(r => setTimeout(r, ms));
 
 module.exports = function (app, passport, io) {
     cron.init();
+
     // Home page
     app.get('/', isLoggedIn, function (req, res) {
         res.sendFile('index.html', {root: './public'});
@@ -18,16 +19,10 @@ module.exports = function (app, passport, io) {
 
     app.post('/', isLoggedIn, async function (req, res) {
         await database.cleanTables();
-        // const time = Date.now().toString();
-        const filename = await myfile.readExcel(req, res); //, time
+        const filename = await myfile.readExcel(req, res);
         await excel.csv(filename, 'main.csv');
         await waitFor(5000);
         res.end('Файл загружен');
-        // await mysql.db_csv('main.csv', 'pre_excel');
-        // await codecat.codecat();
-        // await database.insertTables();
-        // await database.findPrices();
-        // await dataProcessing.export(await database.selectAll());
     });
 
     app.get('/login', function (req, res) {
@@ -44,7 +39,7 @@ module.exports = function (app, passport, io) {
             console.log('hello');
 
             if (req.body.remember) {
-                req.session.cookie.maxAge = 60 * 60; // 1 hour
+                req.session.cookie.maxAge = 60 * 60;
             } else {
                 req.session.cookie.expires = false;
             }
@@ -63,6 +58,7 @@ module.exports = function (app, passport, io) {
 
 function isLoggedIn(req, res, next) {
     console.log('Are u logged?');
+    
     // if user is authenticated in the session, carry on
     if (req.isAuthenticated())
         return next();

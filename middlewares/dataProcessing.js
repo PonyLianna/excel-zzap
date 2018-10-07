@@ -2,7 +2,7 @@ const mysql = require('./database/database');
 const xlsx = require('xlsx');
 
 const name = "sheetjs";
-const filename = "./final/final.xlsx";
+const filename = `${require('../config/config').finalExcel.path}\\${require('../config/config').finalExcel.name}.xlsx`;
 
 async function asyncForEach(array, callback) {
     for (let index = 0; index < array.length; index++) {
@@ -52,7 +52,6 @@ async function read(zero) {
 async function alternativeRead(exportFrom, instock, wholesale){
     return new Promise(async function(resolve){
         console.log(1);
-        // let arr = await database.getExcel();
         let processed = 0;
         await Promise.all(exportFrom.map(async (item) => {
             console.log(processed);
@@ -82,8 +81,3 @@ exports.altExport = async function (exportFrom, instock, wholesale) {
     let data = await alternativeRead(exportFrom, instock, wholesale);
     return await save(name, filename, data);
 };
-
-// exports.newExport = async function (instock, wholesale) {
-//     let data = await alternativeRead(instock, wholesale);
-//     return await save(name, filename, data);
-// };
