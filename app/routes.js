@@ -58,7 +58,7 @@ module.exports = function (app, passport, io) {
 
 function isLoggedIn(req, res, next) {
     console.log('Are u logged?');
-    
+
     // if user is authenticated in the session, carry on
     if (req.isAuthenticated())
         return next();

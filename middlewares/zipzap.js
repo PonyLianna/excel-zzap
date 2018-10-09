@@ -1,6 +1,6 @@
 const request = require('request');
-const mysql = require('./../middlewares/database/database');
-const api_key = require('./config').api_key;
+const mysql = require('./database/database');
+const api_key = require('./../config/config').api_key;
 
 exports.GetSearchResultV2 = function (id, partnumber, class_man, name) {
     const options = {
@@ -41,8 +41,6 @@ exports.GetSearchResultV2 = function (id, partnumber, class_man, name) {
                         await mysql.addNewSeller(table.class_user, partnumber,
                             table.price.replace('р.', '').replace(' ', ''),
                             table.instock, table.wholesale);
-                        // console.log(parsed[0].instock);
-                        // console.log(parsed[0].wholesale);
                     } else {
                         await console.log(table.class_user + ' is non-local!');
                     }

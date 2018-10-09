@@ -1,4 +1,4 @@
-const zipzap = require('./../config/zipzap');
+const zipzap = require('./zipzap');
 const mysql = require('./database/database');
 const fs = require('fs');
 

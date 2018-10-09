@@ -1,6 +1,6 @@
 const LocalStrategy = require('passport-local').Strategy;
 const mysql = require('mysql');
-const configuration = require('./config');
+const configuration = require('./../config/config');
 
 let config = configuration.dbconfig;
 config.database = configuration.dbname;
