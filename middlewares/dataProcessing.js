@@ -14,15 +14,14 @@ const waitFor = (ms) => new Promise(r => setTimeout(r, ms));
 
 function save(name, filename, info) {
     return new Promise(async (resolve, reject) => {
-        console.log('MySQL is here');
         const wb = await xlsx.utils.book_new();
-        console.log('Book created');
+        logger.debug('Добавлена страница');
         const ws = await xlsx.utils.json_to_sheet(info);
-        console.log('To sheet ended');
+        logger.debug('Парсим в sql вид');
         await xlsx.utils.book_append_sheet(wb, ws, name);
-        console.log('Saved');
+        logger.debug('Добавляем на страницу пропаршенный до этого sql');
         xlsx.writeFileSync(wb, filename);
-        console.log('Everything is here!');
+        logger.info('xlsx готов');
         resolve();
     });
 }
@@ -42,7 +41,7 @@ async function read(zero) {
             });
             processed++;
             if (processed === zero.length) {
-                console.log('finished');
+                logger.debug('Чтение файла закончено');
                 resolve(myzero);
             }
         });
@@ -64,8 +63,8 @@ async function alternativeRead(exportFrom, instock, wholesale){
             }
             processed++;
             if (processed === exportFrom.length){
-                console.log('Finished');
-                console.log(exportFrom);
+                logger.debug('Чтение файла из socket закончено');
+                logger.debug(exportFrom);
                 resolve(exportFrom);
             }
         }))

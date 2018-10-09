@@ -10,17 +10,19 @@ function handleDisconnect() {
     connection = mysql.createConnection(config);
     connection.connect(function (err) {
         if (err) {
-            console.log('error when connecting to db:', err);
+            logger.warn('Ошибка соединения с базой данных', err);
             setTimeout(handleDisconnect, 2000);
         }
     });
 
     connection.on('error', function (err) {
-        console.log('db error', err);
+        logger.warn('Ошибка базы данных', err);
         if (err.code === 'PROTOCOL_CONNECTION_LOST') {
             handleDisconnect();
+        } else if (err.code === 'ETIMEDOUT') {
+            connection.connect();
         } else {
-            throw err;
+            logger.error('Критическая ошибка!', err);
         }
     });
 }
@@ -36,7 +38,7 @@ async function asyncForEach(array, callback) {
 let queryFunction = function (sql, info) {
     return new Promise(async resolve => {
         connection.query(sql, [info], function (err, result, fields) {
-            if (err) console.log(err);
+            if (err) logger.error(err);
             return resolve(result);
         });
     });
@@ -70,7 +72,7 @@ exports.addNewSeller = function (class_user, partnumber, price, instock, wholesa
 exports.addCodecat = async function (data) {
     return new Promise(async resolve => {
         const sql = 'UPDATE pre_excel SET code_cat=' + data[1] + ' WHERE id = ' + data[0];
-        console.log(sql);
+        logger.debug(sql);
         await queryFunction(sql);
         resolve();
     });
@@ -80,7 +82,6 @@ exports.findPrices = function () {
     return new Promise(async resolve => {
         let result = await queryFunction('SELECT vendor_code FROM excel');
         await asyncForEach(result, async function (row) {
-        // await Promise.all(result.map(async (row) => {
             const partnumber = row.vendor_code;
 
             const sql = 'UPDATE excel SET ' +
@@ -89,9 +90,8 @@ exports.findPrices = function () {
                 `max_price = (SELECT MAX(price) FROM sellers WHERE vendor_code = \"${partnumber}\") ` +
                 `WHERE vendor_code = "${partnumber}"`;
 
-            console.log(partnumber);
+            logger.debug(partnumber);
             await queryFunction(sql);
-            // });
         });
         resolve();
     });
@@ -153,7 +153,7 @@ exports.insertTables = function () {
             'seller=pre_sellers.seller, vendor_code=pre_sellers.vendor_code, price=pre_sellers.price,' +
             'instock=pre_sellers.instock, wholesale=pre_sellers.wholesale');
 
-        console.log('INSERTED to real');
+        logger.debug('Импортировали в настоящие таблицы');
         resolve();
     });
 };
@@ -163,7 +163,7 @@ exports.cleanTables = async function () {
         await queryFunction('TRUNCATE TABLE pre_excel');
         await queryFunction('TRUNCATE TABLE pre_sellers');
         await queryFunction('TRUNCATE TABLE empty');
-        console.log('Empty');
+        logger.info('Очищаем претаблицы от данных');
         resolve();
     });
 };
@@ -173,6 +173,7 @@ exports.cleanTablesSocket = async function () {
         await queryFunction('TRUNCATE TABLE sellers');
         await queryFunction('TRUNCATE TABLE excel');
         await queryFunction('TRUNCATE TABLE empty');
+        logger.info('Очищаем реальные таблицы от данных');
         resolve();
     });
 };

@@ -17,19 +17,19 @@ function handleDisconnect() {
 
     connection.connect(function (err) {
         if (err) {
-            console.log('error when connecting to db:', err);
+            logger.warn('Ошибка соединения с базой данных', err);
             setTimeout(handleDisconnect, 2000);
         }
     });
 
     connection.on('error', function (err) {
-        // console.log('db error', err);
+        logger.warn('Ошибка базы данных', err);
         if (err.code === 'PROTOCOL_CONNECTION_LOST') {
             handleDisconnect();
         } else if (err.code === 'ETIMEDOUT') {
             connection.connect();
         } else {
-            throw err;
+            logger.error('Критическая ошибка!', err);
         }
     });
 }
@@ -71,14 +71,14 @@ const sessions = '(sid varchar(255) COLLATE utf8_unicode_ci NOT NULL,' +
 let queryFunction = function (sql, info) {
     return new Promise(async resolve => {
         connection.query(sql, [info], function (err, result, fields) {
-            if (err) console.log(err);
+            if (err) logger.debug(err);
             return resolve(result);
         });
     });
 };
 
 exports.configure = async function () {
-    console.log('Starting configuration!');
+    logger.info('Начинаем конфигурацию');
     await createAll();
 };
 
@@ -103,7 +103,7 @@ async function createAll() {
 function setConnections() {
     return new Promise(async resolve => {
         await queryFunction('set global max_connections = 1000');
-        console.log('Max connection SET 1000');
+        logger.info('Максимальное количество соединений установлено на 1000');
         resolve()
     });
 }
@@ -113,28 +113,26 @@ function create_table(table, columns) {
     let alter = 'ALTER TABLE ' + table + ' CONVERT TO CHARACTER SET utf8 COLLATE utf8_unicode_ci';
     return new Promise(async (resolve, reject) => {
         await queryFunction(sql);
-        console.log('Table ' + table + ' created');
+        logger.info('Таблица ' + table + ' создана');
         await queryFunction(alter);
-        console.log('Table ' + table + ' converted');
+        logger.info('Таблица ' + table + ' переконвертированна');
         resolve();
     });
 }
 
 function destroy(my_table) {
     return new Promise(async (resolve, reject) => {
-        // config.database = database;
         await queryFunction('DROP TABLE IF EXISTS ??', my_table);
-        console.log('Table ' + my_table + ' dropped');
+        logger.info('Таблица ' + my_table + ' уничтожена');
         resolve();
     });
 }
 
-exports.destroyEverything = async function(...tables){
-    await asyncForEach(tables, async (table)=>{
+exports.destroyEverything = async function (...tables) {
+    await asyncForEach(tables, async (table) => {
         await destroy(table);
     });
-    // await Promise.all(tables.map((table)=>{destroy(table)}));
-    console.log('Everything is done');
+    logger.silly('База данных настроена');
     connection.end();
 };
 
@@ -147,7 +145,7 @@ exports.truncate = function (my_table) {
 
 exports.db_csv = function (filename, tablename) {
     return new Promise(async resolve => {
-        console.log('db_csv');
+        logger.silly('Вносим в базу данных csv');
         config.flags = 'LOCAL_FILES';
 
         const sql = "LOAD DATA LOCAL INFILE '" + (__dirname + "/../..").replace(/\\/g, "/") +
@@ -168,8 +166,7 @@ exports.createUser = function (name, password) {
     const sql = 'INSERT INTO users(name,password) VALUES (?)';
     return new Promise(async resolve => {
         await queryFunction(sql, [name, password]);
-        console.log('User: ' + name + ' ' + password + ' added!');
-        console.log('Successful added');
+        logger.info('Пользователь: ' + name + ' ' + password + ' добавлен!');
         connection.end();
         resolve();
     });
@@ -179,8 +176,7 @@ exports.deleteUser = function (name) {
     const sql = 'DELETE FROM users WHERE name = ?';
     return new Promise(async resolve => {
         await queryFunction(sql, [name]);
-        console.log('User: ' + name + ' deleted!');
-        console.log('Successful deleted');
+        logger.info('Пользователь: ' + name + ' ' + password + ' удален!');
         connection.end();
         resolve();
     });

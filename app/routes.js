@@ -22,6 +22,7 @@ module.exports = function (app, passport, io) {
         const filename = await myfile.readExcel(req, res);
         await excel.csv(filename, 'main.csv');
         await waitFor(5000);
+        logger.info('Файл загружен в базу данных');
         res.end('Файл загружен');
     });
 
@@ -36,7 +37,7 @@ module.exports = function (app, passport, io) {
             failureFlash: true
         }),
         function (req, res) {
-            console.log('hello');
+            logger.info('Пройдена авторизация');
 
             if (req.body.remember) {
                 req.session.cookie.maxAge = 60 * 60;
@@ -57,10 +58,11 @@ module.exports = function (app, passport, io) {
 };
 
 function isLoggedIn(req, res, next) {
-    console.log('Are u logged?');
-
+    logger.info('Попытка залогиниться используя существующую сессию');
     // if user is authenticated in the session, carry on
-    if (req.isAuthenticated())
+    if (req.isAuthenticated()){
+        logger.info('Пользователь авторизован');
         return next();
+    }
     res.redirect('/login');
 }

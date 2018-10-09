@@ -9,7 +9,6 @@ let max = 0;
 let jobs = {};
 
 exports.init = async function () {
-    console.log(new Date());
     const result = await mysql.readData();
     result.forEach(function (data) {
         max = data.id;
@@ -17,7 +16,7 @@ exports.init = async function () {
         let spec = 0;
 
         time = new Date(data.time);
-        console.log(time);
+        logger.debug(time);
         if (time == 'Invalid Date') {
             time = data.time;
             spec = 1;
@@ -52,7 +51,7 @@ exports.add = function (time) {
         await codecat.codecat();
         await database.insertTables();
         await database.findPrices();
-        console.log((await exports.find(time))[0].time);
+        logger.debug((await exports.find(time))[0].time);
         if (!spec) await mysql.delData((await exports.find(time))[0].time);
         await socket.times();
     }, null, true);
@@ -64,7 +63,7 @@ exports.delete = function (id) {
 };
 
 exports.list = async function () {
-    return new Promise(async function (resolve, reject) {
+    return new Promise(async resolve => {
         const data = await mysql.readData();
         resolve(data);
     });

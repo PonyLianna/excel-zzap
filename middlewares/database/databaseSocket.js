@@ -1,12 +1,12 @@
 const queryFunction = require('./database').queryFunction;
 
 exports.addData = function (time) {
-    console.log(time);
+    logger.debug(time);
     queryFunction('INSERT INTO times (time) VALUES (?)', time);
 };
 
 exports.delData = function (time) {
-    queryFunction("DELETE FROM times WHERE time = '" + time + "'");
+    queryFunction(`DELETE FROM times WHERE time = '${time}'`);
 };
 
 exports.readData = async function () {
@@ -14,5 +14,5 @@ exports.readData = async function () {
 };
 
 exports.findData = async function (time) {
-    return await queryFunction("SELECT * FROM times where time = '" + time + "'");
+    return await queryFunction(`SELECT * FROM times where time = '${time}'`);
 };

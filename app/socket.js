@@ -11,7 +11,7 @@ exports.main = function (io) { // DEFAULT FUNCTION
     io.sockets.on('connection', async function (socket) {
         exports.log = function (i, massive, startTime) {
             const message = {"time": new Date().toUTCString() + ' ' + i, "length": massive.length, "now": i+1, startTime};
-            console.log(message);
+            logger.debug(message);
             socket.emit('codecat', message);
         };
 
@@ -19,17 +19,13 @@ exports.main = function (io) { // DEFAULT FUNCTION
             socket.emit('time', await cron.list());
         };
 
-        console.log('Присоединился клиент');
+        logger.info('К socket серверу присоединился клиент');
         socket.emit('message', 'Вы присоединены к серверу');
 
         exports.times();
 
         socket.broadcast.emit('message', 'Новый клиент присоединился к вам');
 
-        socket.on('answer', function (message) {
-            console.log(message + ' client ' + +' saying!');
-            socket.emit('message', message);
-        });
 
         socket.on('update', async function (time) {
             await database.cleanTablesSocket();
@@ -43,30 +39,36 @@ exports.main = function (io) { // DEFAULT FUNCTION
         socket.on('delete', async function (time) {
             await manipulate.truncateAll();
             socket.emit('message', 'База данных была удалена');
-            console.log('База обновлена');
+            logger.info('База обновлена');
         });
 
         socket.on('time', function (message) {
-            console.log('Добавлен таймер на ' + message);
+            logger.info('Добавлен таймер на ' + message);
             cron.add(message);
             mysql.addData(message);
         });
 
         socket.on('time_del', async function (message) {
-            console.log('Удаляю таймер ' + message);
+            logger.info('Удаляю таймер ' + message);
             let id = await cron.find(message);
             cron.delete(id);
             mysql.delData(message);
         });
 
         socket.on('data', async function (message) {
-            console.log(message);
+            let text = `Сообщение с параметрами: '${message.instock?"В наличии":"Под заказ"}, 
+                        ${message.wholesale?"В розницу":"Оптом"}' отправлено на email: ${message.email}`;
+
+            logger.debug(`Сообщение с параметрами: '${message.instock?"В наличии":"Под заказ"}, 
+                        ${message.wholesale?"В розницу":"Оптом"}' отправляется на email: ${message.email}`);
+
             await proc.altExport(await database.selectAll(), message.instock, message.wholesale);
             await email.sendMail(message.email, 'Excel ' + new Date(), '',
                 `${require('../config/config').finalExcel.path}\\
                 ${require('../config/config').finalExcel.name}.xlsx`);
-            socket.emit('message', `Сообщение с параметрами: '${message.instock?"В наличии":"Под заказ"}, 
-                        ${message.wholesale?"В розницу":"Оптом"}' отправлено на email: ${message.email}`)
+
+            socket.emit('message', text);
+            logger.info(text);
         });
     });
 };

@@ -31,28 +31,25 @@ exports.GetSearchResultV2 = function (id, partnumber, class_man, name) {
         console.log(options.json);
         request(options, async function (err, response) {
                 await waitFor(500);
-                if (err) throw err;
+                if (err) logger.error(err);
                 const parsed = JSON.parse(response.body.d).table;
-                console.log(parsed);
+                logger.debug(parsed);
                 try {
                     await mysql.addCodecat([id, parsed[0].code_cat]);
                     await asyncForEach(parsed, async function (table) {
-                    if (table.local) {
-                        await mysql.addNewSeller(table.class_user, partnumber,
-                            table.price.replace('р.', '').replace(' ', ''),
-                            table.instock, table.wholesale);
-                    } else {
-                        await console.log(table.class_user + ' is non-local!');
-                    }
-                    resolve();
+                        if (table.local) {
+                            await mysql.addNewSeller(table.class_user, partnumber,
+                                table.price.replace('р.', '').replace(' ', ''),
+                                table.instock, table.wholesale);
+                        } else {
+                            logger.debug(table.class_user + ' is non-local!');
+                        }
+                        resolve();
                     });
-                }
-                catch (err) {
+                } catch (err) {
                     await mysql.addEmpty(id, partnumber);
-                    console.log('ID ' + id + ' is empty!');
-                    console.log(JSON.parse(response.body.d).error);
+                    logger.debug('ID ' + id + ' is empty!');
                     if (JSON.parse(response.body.d).error) {
-                        console.log(response.body.d.error);
                         return reject(response.body.d.error);
                     } else {
                         return resolve();

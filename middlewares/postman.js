@@ -7,7 +7,7 @@ async function asyncForEach(array, callback) {
     }
 }
 
-async function send (email, subject, text, path) {
+async function send(email, subject, text, path) {
     let message = {
         from: smtpConfig.auth.user,
         to: email,
@@ -21,22 +21,21 @@ async function send (email, subject, text, path) {
     const transporter = await nodemailer.createTransport(smtpConfig);
     console.log(smtpConfig);
 
-    transporter.sendMail(message, function(error, info){
+    transporter.sendMail(message, function (error, info) {
         if (error) {
-            console.log(error);
+            logger.error(error);
         } else {
-            console.log('Email sent: ' + info.response);
+            logger.log('silly', 'Email отправлен: ' + info.response);
         }
     });
 }
 
-exports.sendMail = async function(emailList, subject, text, path){
-    return new Promise(async resolve=>{
+exports.sendMail = async function (emailList, subject, text, path) {
+    return new Promise(async resolve => {
         await asyncForEach(emailList.split(','), async function (email) {
             await send(email, subject, text, path);
-            console.log(email);
+            logger.debug(email);
         });
-        console.log('Email ended!');
         resolve()
     });
 };
