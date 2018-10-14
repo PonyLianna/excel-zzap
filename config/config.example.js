@@ -33,4 +33,10 @@ config.api_key = '';
 /* CLIENTSIDE MUST BE CHANGED DIRECTLY! */
 // ./public/js/socket.js SECOND ROW
 
+/* Final xlsx configuration */
+config.finalExcel = {
+    path: "",
+    name: "final.xlsx"
+};
+
 module.exports = config;
