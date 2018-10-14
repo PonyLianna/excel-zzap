@@ -10,12 +10,17 @@ const proc = require('../middlewares/dataProcessing');
 exports.main = function (io) { // DEFAULT FUNCTION
     io.sockets.on('connection', async function (socket) {
         exports.log = function (i, massive, startTime) {
-            const message = {"time": new Date().toUTCString() + ' ' + i, "length": massive.length, "now": i+1, startTime};
+            const message = {
+                "time": new Date().toUTCString() + ' ' + i,
+                "length": massive.length,
+                "now": i + 1,
+                startTime
+            };
             logger.debug(message);
             socket.emit('codecat', message);
         };
 
-        exports.times = async function() {
+        exports.times = async function () {
             socket.emit('time', await cron.list());
         };
 
@@ -56,16 +61,15 @@ exports.main = function (io) { // DEFAULT FUNCTION
         });
 
         socket.on('data', async function (message) {
-            let text = `Сообщение с параметрами: '${message.instock?"В наличии":"Под заказ"}, 
-                        ${message.wholesale?"В розницу":"Оптом"}' отправлено на email: ${message.email}`;
+            let text = `Сообщение с параметрами: '${message.instock ? "В наличии" : "Под заказ"}, 
+                        ${message.wholesale ? "В розницу" : "Оптом"}' отправлено на email: ${message.email}`;
 
-            logger.debug(`Сообщение с параметрами: '${message.instock?"В наличии":"Под заказ"}, 
-                        ${message.wholesale?"В розницу":"Оптом"}' отправляется на email: ${message.email}`);
+            logger.debug(`Сообщение с параметрами: '${message.instock ? "В наличии" : "Под заказ"}, 
+                        ${message.wholesale ? "В розницу" : "Оптом"}' отправляется на email: ${message.email}`);
 
             await proc.altExport(await database.selectAll(), message.instock, message.wholesale);
             await email.sendMail(message.email, 'Excel ' + new Date(), '',
-                `${require('../config/config').finalExcel.path}\\
-                ${require('../config/config').finalExcel.name}.xlsx`);
+                `${require('../config/config').finalExcel.path}/${require('../config/config').finalExcel.name}`);
 
             socket.emit('message', text);
             logger.info(text);

@@ -2,7 +2,7 @@ const mysql = require('./database/database');
 const xlsx = require('xlsx');
 
 const name = "sheetjs";
-const filename = `${require('../config/config').finalExcel.path}\\${require('../config/config').finalExcel.name}.xlsx`;
+const filename = `${require('../config/config').finalExcel.path}/${require('../config/config').finalExcel.name}`;
 
 async function asyncForEach(array, callback) {
     for (let index = 0; index < array.length; index++) {
@@ -22,6 +22,7 @@ function save(name, filename, info) {
         logger.debug('Добавляем на страницу пропаршенный до этого sql');
         xlsx.writeFileSync(wb, filename);
         logger.info('xlsx готов');
+        logger.info(filename);
         resolve();
     });
 }

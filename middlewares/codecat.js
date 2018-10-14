@@ -14,11 +14,13 @@ const waitFor = (ms) => new Promise(r => setTimeout(r, ms));
 function request(id, partnumber, class_man, name) {
     return new Promise(async resolve => {
         logger.info(id + ' ' + class_man + ' ' + partnumber);
-        await zipzap.GetSearchResultV2(id, partnumber, class_man, name).catch((err) => {
-                logger.error(err);
-                return new Error(err);
-            });
-        return resolve();
+        zipzap.GetSearchResultV2(id, partnumber, class_man, name).catch(async (err) => {
+            logger.warn('Ошибка отправки запроса. Попробуем еще раз.');
+            await waitFor(2000);
+            await request(id, partnumber, class_man, name);
+        }).then(() => {
+            return resolve();
+        });
     });
 }
 

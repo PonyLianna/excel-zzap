@@ -20,7 +20,7 @@ server = Server(app);
 const io = require('socket.io')(server);
 
 require('./middlewares/passport')(passport); // pass passport for configuration
-app.use(morgan('combined', {"stream": logger.stream}));
+// app.use(morgan('combined', { 'stream': logger.stream}));
 app.use(cookieParser()); // read cookies
 app.use(bodyParser.urlencoded({
     extended: true

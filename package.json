@@ -19,6 +19,7 @@
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
     "passport.socketio": "^3.7.0",
+    "pm2": "^3.2.2",
     "request": "^2.87.0",
     "socket.io": "^2.1.1",
     "underscore": "^1.8.3",
@@ -28,6 +29,10 @@
   "scripts": {
     "configure": "node ./scripts/configure.js",
     "start": "node start.js",
+    "service": "pm2 start config/pm2.config.js",
+    "monitor": "pm2 monit",
+    "kill": "pm2 stop excel-zzap",
+    "cleanLogs": "pm2 flush",
     "destroyEverything": "node ./scripts/destroyEverything.js",
     "recreate": "npm run destroyEverything && npm run createdb && npm run configure && npm run createAdmin",
     "create": "npm run createdb && npm run configure && npm run createAdmin",

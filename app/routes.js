@@ -58,7 +58,7 @@ module.exports = function (app, passport, io) {
 };
 
 function isLoggedIn(req, res, next) {
-    logger.info('Попытка залогиниться используя существующую сессию');
+    logger.info('Попытка авторизации при помощи существующей сессии');
     // if user is authenticated in the session, carry on
     if (req.isAuthenticated()){
         logger.info('Пользователь авторизован');

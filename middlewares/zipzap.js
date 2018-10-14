@@ -28,32 +28,37 @@ exports.GetSearchResultV2 = function (id, partnumber, class_man, name) {
     }
 
     return new Promise((resolve, reject) => {
-        console.log(options.json);
+        logger.debug(options.json);
         request(options, async function (err, response) {
-                await waitFor(500);
-                if (err) logger.error(err);
-                const parsed = JSON.parse(response.body.d).table;
-                logger.debug(parsed);
-                try {
-                    await mysql.addCodecat([id, parsed[0].code_cat]);
-                    await asyncForEach(parsed, async function (table) {
-                        if (table.local) {
-                            await mysql.addNewSeller(table.class_user, partnumber,
-                                table.price.replace('р.', '').replace(' ', ''),
-                                table.instock, table.wholesale);
+                if (response) {
+                    if (err) logger.error(err);
+                    const parsed = JSON.parse(response.body.d).table;
+                    logger.debug(parsed);
+                    try {
+                        await mysql.addCodecat([id, parsed[0].code_cat]);
+                        await asyncForEach(parsed, async function (table) {
+                            if (table.local) {
+                                await mysql.addNewSeller(table.class_user, partnumber,
+                                    table.price.replace('р.', '').replace(' ', ''),
+                                    table.instock, table.wholesale);
+                            } else {
+                                await logger.debug(table.class_user + ' is non-local!');
+                            }
+                            resolve();
+                        });
+                    } catch (err) {
+                        await mysql.addEmpty(id, partnumber);
+                        logger.silly('ID ' + id + ' is empty!');
+                        console.log(JSON.parse(response.body.d).error);
+                        if (JSON.parse(response.body.d).error) {
+                            logger.info(response.body.d.error);
+                            return reject(response.body.d.error);
                         } else {
-                            logger.debug(table.class_user + ' is non-local!');
+                            return resolve();
                         }
-                        resolve();
-                    });
-                } catch (err) {
-                    await mysql.addEmpty(id, partnumber);
-                    logger.debug('ID ' + id + ' is empty!');
-                    if (JSON.parse(response.body.d).error) {
-                        return reject(response.body.d.error);
-                    } else {
-                        return resolve();
                     }
+                } else {
+                    return reject()
                 }
             }
         );
