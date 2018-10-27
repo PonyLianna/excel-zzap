@@ -1,11 +1,9 @@
 const cron = require('../middlewares/cron');
-const email = require('../middlewares/postman');
 const mysql = require('../middlewares/database/databaseSocket');
 const init = require('../middlewares/database/init');
 const database = require('../middlewares/database/database');
 const manipulate = require('../middlewares/database/databaseManipulate');
 const codecat = require('../middlewares/codecat');
-const proc = require('../middlewares/dataProcessing');
 
 exports.main = function (io) { // DEFAULT FUNCTION
     io.sockets.on('connection', async function (socket) {
@@ -61,16 +59,9 @@ exports.main = function (io) { // DEFAULT FUNCTION
         });
 
         socket.on('data', async function (message) {
-            let text = `Сообщение с параметрами: '${message.instock ? "В наличии" : "Под заказ"}, 
-                        ${message.wholesale ? "В розницу" : "Оптом"}' отправлено на email: ${message.email}`;
-
-            logger.debug(`Сообщение с параметрами: '${message.instock ? "В наличии" : "Под заказ"}, 
-                        ${message.wholesale ? "В розницу" : "Оптом"}' отправляется на email: ${message.email}`);
-
-            await proc.altExport(await database.selectAll(), message.instock, message.wholesale);
-            await email.sendMail(message.email, 'Excel ' + new Date(), '',
-                `${require('../config/config').finalExcel.path}/${require('../config/config').finalExcel.name}`);
-
+            let text = `Данные оохранены`;
+            database.convertToCSV();
+            logger.debug(text);
             socket.emit('message', text);
             logger.info(text);
         });

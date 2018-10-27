@@ -178,6 +178,21 @@ exports.cleanTablesSocket = async function () {
     });
 };
 
+exports.convertToCSV = function (outfile='C:/Temp') {
+    return new Promise(async resolve => {
+        logger.silly('Экспортируем в csv');
+        const sql = `SELECT *
+                    FROM excel
+                    INTO OUTFILE ${outfile}
+                    FIELDS TERMINATED BY ','
+                    ENCLOSED BY '"'
+                    LINES TERMINATED BY '\\n'`;
+
+        await queryFunction(sql);
+        resolve();
+    });
+};
+
 exports.getAllProductsFilter = async function () {
     return await queryFunction('SELECT * FROM excel'); // WHERE codecat IS NOT NULL
 };
