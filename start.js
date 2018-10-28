@@ -2,23 +2,24 @@ const express = require('express');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
-const morgan = require('morgan');
 const passport = require('passport');
 const flash = require('connect-flash');
 const passportSocketIo = require('passport.socketio');
 const MySQLStore = require('connect-mysql')(session);
 
-const options = { config: require('./config/config').dbconfig };
+global.logger = require('./middlewares/logger').main();
+
+const options = {config: require('./config/config').dbconfig};
 options.config.database = require('./config/config').dbname;
 
 const Server = require('http').Server;
 
-app = express(); // Express instance= created!
+app = express(); // Express instance created!
 server = Server(app);
 const io = require('socket.io')(server);
 
-require('./config/passport')(passport); // pass passport for configuration
-app.use(morgan('dev'));
+require('./middlewares/passport')(passport); // pass passport for configuration
+// app.use(morgan('combined', { 'stream': logger.stream}));
 app.use(cookieParser()); // read cookies
 app.use(bodyParser.urlencoded({
     extended: true
@@ -53,4 +54,4 @@ require('./app/socket').main(io);
 const port = require('./config/config').port;
 server.listen(port);
 
-console.log('Run on ' + port + ' port');
+logger.info('Запускаем на порте ' + port);

@@ -12,33 +12,9 @@ config.dbconfig = {
     password: ''
 };
 
-/* EMAIL CONFIGURATION */
-config.emailConfig = {
-    //  при использовании service
-    service: "Yandex",
-    
-    //  при использовании напрямую smtp
-    //  host: 'my.smtp.host', 
-    //  port: 465,
-    //  secure: true, // использование TLS
-    
-    // аутентификация обязательна
-    auth: {
-        user: '',
-        pass: ''
-    },
-    
-    // при отсутствии параметра secure не имеет какого-либо смысла
-    //     tls:{
-    //         rejectUnauthorized: false
-    //     }
-    
-    // для exchange
-    //     tls:{
-    //         ciphers: 'SSLv3'
-    //     }
-    
-    
+/* CSV CONFIGURATION */
+config.csv = {
+    path: "C:/Temp"
 };
 
 /* SECRET FOR PASSPORT (change this please) */

@@ -17,10 +17,10 @@ exports.readExcel = function (req, res) { //, time
 
         upload(req, res, function (err) {
             if (err) {
-                console.log('Error uploading file');
-                return res.end('Error uploading file.');
+                logger.warn('Ошибка загрузки файла');
+                return res.end('Ошибка загрузки файла');
             }
-            console.log('File ' + name + ' is uploaded');
+            logger.info(`Файл ${name} загружен`);
             resolve(name);
         });
     });

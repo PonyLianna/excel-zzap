@@ -1,6 +1,6 @@
 const LocalStrategy = require('passport-local').Strategy;
 const mysql = require('mysql');
-const configuration = require('./config');
+const configuration = require('./../config/config');
 
 let config = configuration.dbconfig;
 config.database = configuration.dbname;
@@ -11,15 +11,15 @@ function handleDisconnect() {
     connection = mysql.createConnection(config); // Recreate the connection, since
     // the old one cannot be reused.
 
+    logger.info('Пересоздаем соединение');
     connection.connect(function (err) {
         if (err) {
-            console.log('error when connecting to db:', err);
+            logger.warn('Ошибка соединения к базе данных', err);
             setTimeout(handleDisconnect, 2000);
         }
     });
 
     connection.on('error', function (err) {
-        console.log('db error', err);
         if (err.code === 'PROTOCOL_CONNECTION_LOST') {
             handleDisconnect();
         } else {
@@ -34,7 +34,7 @@ module.exports = function (passport) {
 
     // serialize the user for the session
     passport.serializeUser(function (user, done) {
-        console.log('serialize');
+        logger.debug('Выделяем пользователю сессию');
         done(null, user.id);
     });
 
@@ -42,7 +42,7 @@ module.exports = function (passport) {
     passport.deserializeUser(function (id, done) {
         connection.query('SELECT * FROM users WHERE id = ? ', [id], function (err, rows) {
             if (err) return done(err);
-            console.log('deserialize');
+            logger.debug('Убираем у пользователя сессию');
             done(err, rows[0]);
         });
     });
@@ -56,23 +56,21 @@ module.exports = function (passport) {
             },
             function (req, username, password, done) {
                 connection.query('SELECT * FROM users WHERE name = ?', [username], function (err, rows) {
-                    console.log(username);
-                    console.log(rows);
                     if (err) return done(err);
 
                     if (!rows.length) {
-                        console.log('No user');
+                        logger.debug('Данного пользователя не сущетсвует');
                         return done(null, false);
                     }
 
                     // if the user is found but the password is wrong
                     if (password != rows[0].password) {
-                        console.log(password + ': ' + rows[0].password);
-                        console.log('Wrong password!');
+                        logger.debug(password + ': ' + rows[0].password);
+                        logger.debug('Неправильный пароль');
                         return done(null, false);
                     }
 
-                    console.log('Is fine');
+                    logger.debug('Пароль правильный');
                     return done(null, rows[0]);
                 });
             })
