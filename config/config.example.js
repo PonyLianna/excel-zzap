@@ -18,7 +18,7 @@ config.csv = {
 };
 
 /* SECRET FOR PASSPORT (change this please) */
-config.secret = 'mysecretispony';
+config.secret = 'mysecretisapony';
 
 /* ZZAP CONFIGURATION */
 config.api_key = '';
