@@ -26,14 +26,6 @@ NPM автоматически установит все зависимости 
 
 `config.csv.path` - путь для сохранения файла `.csv`
 
-* Конфигурация почты
-
-Если вы хотите изменить сервер, используемый для отправки сообщений сервером, то следует перейти в директорию конфигурации почты [`./config/config.example.js`](https://github.com/PonyLianna/excel-zzap/blob/master/config/config.example.js) (переменная `config.emailConfig`) и изменить **[service](https://nodemailer.com/smtp/well-known/)** по одному из предусмотренных модулем или напрямую через **[SMTP](https://nodemailer.com/smtp/)**.
-
-`config.emailUsername` - имя пользователя.
-
-`config.emailPassword` - пароль.
-
 **Конфигурация passport**
 
 `config.secret` - важное поле, используемое для шифрования hash'a сессии. 
