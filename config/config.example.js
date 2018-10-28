@@ -12,20 +12,13 @@ config.dbconfig = {
     password: ''
 };
 
-/* EMAIL CONFIGURATION */
-config.emailConfig = {
-    service: "Yandex",
-    auth: {
-        user: '',
-        pass: ''
-    },
-    tls:{
-        rejectUnauthorized: false
-    }
+/* CSV CONFIGURATION */
+config.csv = {
+    path: "C:/Temp"
 };
 
 /* SECRET FOR PASSPORT (change this please) */
-config.secret = 'mysecretispony';
+config.secret = 'mysecretisapony';
 
 /* ZZAP CONFIGURATION */
 config.api_key = '';

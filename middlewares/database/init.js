@@ -1,35 +1,30 @@
 const mysql = require('mysql');
 const configuration = require('../../config/config');
+const logger = require('../logger').main();
 
 let config = configuration.dbconfig;
 config.database = configuration.dbname;
 
 let connection;
 
-async function asyncForEach(array, callback) {
-    for (let index = 0; index < array.length; index++) {
-        await callback(array[index], index, array)
-    }
-}
-
 function handleDisconnect() {
     connection = mysql.createConnection(config);
 
     connection.connect(function (err) {
         if (err) {
-            console.log('error when connecting to db:', err);
+            logger.warn('Ошибка соединения с базой данных', err);
             setTimeout(handleDisconnect, 2000);
         }
     });
 
     connection.on('error', function (err) {
-        // console.log('db error', err);
+        logger.warn('Ошибка базы данных', err);
         if (err.code === 'PROTOCOL_CONNECTION_LOST') {
             handleDisconnect();
         } else if (err.code === 'ETIMEDOUT') {
             connection.connect();
         } else {
-            throw err;
+            logger.error('Критическая ошибка!', err);
         }
     });
 }
@@ -37,14 +32,9 @@ function handleDisconnect() {
 handleDisconnect();
 
 const excelColumn = '(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, ' +
-    'manufacturer VARCHAR(20), ' +
+    'manufacturer VARCHAR(40), ' +
     'vendor_code VARCHAR(100), ' +
-    'name VARCHAR(100), ' +
-    'code_cat VARCHAR(20), ' +
-    'min_price DECIMAL(8,2), ' +
-    'avg_price DECIMAL(8,2), ' +
-    'max_price DECIMAL(8,2), ' +
-    'UNIQUE KEY manufacturer (manufacturer,name,vendor_code))';
+    'name VARCHAR(200))';
 
 const usersColumn = '(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, ' +
     'name VARCHAR(100) UNIQUE, ' +
@@ -71,20 +61,19 @@ const sessions = '(sid varchar(255) COLLATE utf8_unicode_ci NOT NULL,' +
 let queryFunction = function (sql, info) {
     return new Promise(async resolve => {
         connection.query(sql, [info], function (err, result, fields) {
-            if (err) console.log(err);
+            if (err) logger.debug(err);
             return resolve(result);
         });
     });
 };
 
 exports.configure = async function () {
-    console.log('Starting configuration!');
+    logger.info('Начинаем конфигурацию');
     await createAll();
 };
 
 async function createAll() {
     await Promise.all([
-        setConnections(),
         create_table('excel', excelColumn),
         create_table('pre_excel', excelColumn),
 
@@ -100,41 +89,31 @@ async function createAll() {
     connection.end();
 }
 
-function setConnections() {
-    return new Promise(async resolve => {
-        await queryFunction('set global max_connections = 1000');
-        console.log('Max connection SET 1000');
-        resolve()
-    });
-}
-
 function create_table(table, columns) {
-    let sql = 'CREATE TABLE ' + table + columns;
-    let alter = 'ALTER TABLE ' + table + ' CONVERT TO CHARACTER SET utf8 COLLATE utf8_unicode_ci';
-    return new Promise(async (resolve, reject) => {
+    let sql = `CREATE TABLE ${table} ${columns}`;
+    let alter = `ALTER TABLE ${table} CONVERT TO CHARACTER SET utf8 COLLATE utf8_unicode_ci`;
+    return new Promise(async resolve => {
         await queryFunction(sql);
-        console.log('Table ' + table + ' created');
+        logger.info(`Таблица ${table} создана`);
         await queryFunction(alter);
-        console.log('Table ' + table + ' converted');
+        logger.info(`Таблица ${table} переконвертированна`);
         resolve();
     });
 }
 
-function destroy(my_table) {
-    return new Promise(async (resolve, reject) => {
-        // config.database = database;
-        await queryFunction('DROP TABLE IF EXISTS ??', my_table);
-        console.log('Table ' + my_table + ' dropped');
+function destroy(table) {
+    return new Promise(async resolve => {
+        await queryFunction('DROP TABLE IF EXISTS ??', table);
+        logger.info(`Таблица ${table} уничтожена`);
         resolve();
     });
 }
 
-exports.destroyEverything = async function(...tables){
-    await asyncForEach(tables, async (table)=>{
+exports.destroyEverything = async function (...tables) {
+    for (table of tables){
         await destroy(table);
-    });
-    // await Promise.all(tables.map((table)=>{destroy(table)}));
-    console.log('Everything is done');
+    }
+    logger.info('База данных уничтожена');
     connection.end();
 };
 
@@ -147,7 +126,7 @@ exports.truncate = function (my_table) {
 
 exports.db_csv = function (filename, tablename) {
     return new Promise(async resolve => {
-        console.log('db_csv');
+        logger.silly('Вносим в базу данных csv');
         config.flags = 'LOCAL_FILES';
 
         const sql = "LOAD DATA LOCAL INFILE '" + (__dirname + "/../..").replace(/\\/g, "/") +
@@ -168,8 +147,7 @@ exports.createUser = function (name, password) {
     const sql = 'INSERT INTO users(name,password) VALUES (?)';
     return new Promise(async resolve => {
         await queryFunction(sql, [name, password]);
-        console.log('User: ' + name + ' ' + password + ' added!');
-        console.log('Successful added');
+        logger.info(`Пользователь: ${name} ${password} добавлен!`);
         connection.end();
         resolve();
     });
@@ -179,8 +157,7 @@ exports.deleteUser = function (name) {
     const sql = 'DELETE FROM users WHERE name = ?';
     return new Promise(async resolve => {
         await queryFunction(sql, [name]);
-        console.log('User: ' + name + ' deleted!');
-        console.log('Successful deleted');
+        logger.info(`Пользователь: ${name} ${password} удален!`);
         connection.end();
         resolve();
     });
@@ -189,3 +166,5 @@ exports.deleteUser = function (name) {
 exports.fixSession = async function () {
     return exports.truncate('sessions');
 };
+
+exports.destroy = destroy;
