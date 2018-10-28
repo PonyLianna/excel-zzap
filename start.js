@@ -2,7 +2,6 @@ const express = require('express');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
-const morgan = require('morgan');
 const passport = require('passport');
 const flash = require('connect-flash');
 const passportSocketIo = require('passport.socketio');

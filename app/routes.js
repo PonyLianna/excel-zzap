@@ -1,10 +1,6 @@
 const myfile = require('../middlewares/fileUpload');
 const excel = require('../middlewares/excelProcessing');
-const mysql = require('../middlewares/database/init');
 const database = require('../middlewares/database/database');
-const codecat = require('../middlewares/codecat');
-const email = require('../middlewares/postman');
-const dataProcessing = require('../middlewares/dataProcessing');
 const cron = require('../middlewares/cron');
 
 const waitFor = (ms) => new Promise(r => setTimeout(r, ms));

@@ -12,16 +12,9 @@ config.dbconfig = {
     password: ''
 };
 
-/* EMAIL CONFIGURATION */
-config.emailConfig = {
-    service: "Yandex",
-    auth: {
-        user: '',
-        pass: ''
-    },
-    tls:{
-        rejectUnauthorized: false
-    }
+/* CSV CONFIGURATION */
+config.csv = {
+    path: "C:/Temp"
 };
 
 /* SECRET FOR PASSPORT (change this please) */
@@ -32,11 +25,5 @@ config.api_key = '';
 
 /* CLIENTSIDE MUST BE CHANGED DIRECTLY! */
 // ./public/js/socket.js SECOND ROW
-
-/* Final xlsx configuration */
-config.finalExcel = {
-    path: "",
-    name: "final.xlsx"
-};
 
 module.exports = config;

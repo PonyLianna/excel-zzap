@@ -4,8 +4,6 @@ const configuration = require('../../config/config');
 let config = configuration.dbconfig;
 config.database = configuration.dbname;
 
-const waitFor = (ms) => new Promise(r => setTimeout(r, ms));
-
 function handleDisconnect() {
     connection = mysql.createConnection(config);
     connection.connect(function (err) {
@@ -29,12 +27,6 @@ function handleDisconnect() {
 
 handleDisconnect();
 
-async function asyncForEach(array, callback) {
-    for (let index = 0; index < array.length; index++) {
-        await callback(array[index], index, array)
-    }
-}
-
 let queryFunction = function (sql, info) {
     return new Promise(async resolve => {
         connection.query(sql, [info], function (err, result, fields) {
@@ -54,13 +46,6 @@ exports.getAllProducts = async function () {
     return await queryFunction('SELECT id, manufacturer, vendor_code, name FROM pre_excel');
 };
 
-exports.getAllProductsLarge = async function (table) {
-    const last = await exports.findLast(table);
-    const sql = 'SELECT id, manufacturer, vendor_code FROM ' + table + ' WHERE id >=' + last;
-
-    return await queryFunction(sql);
-};
-
 exports.addNewSeller = function (class_user, partnumber, price, instock, wholesale) {
     const sql = 'INSERT INTO pre_sellers(seller,vendor_code,price,instock,wholesale) VALUES (?)';
     return new Promise(async resolve => {
@@ -69,37 +54,8 @@ exports.addNewSeller = function (class_user, partnumber, price, instock, wholesa
     });
 };
 
-exports.addCodecat = async function (data) {
-    return new Promise(async resolve => {
-        const sql = 'UPDATE pre_excel SET code_cat=' + data[1] + ' WHERE id = ' + data[0];
-        logger.debug(sql);
-        await queryFunction(sql);
-        resolve();
-    });
-};
-
-exports.findPrices = function () {
-    return new Promise(async resolve => {
-        let result = await queryFunction('SELECT vendor_code FROM excel');
-        await asyncForEach(result, async function (row) {
-            const partnumber = row.vendor_code;
-
-            const sql = 'UPDATE excel SET ' +
-                `min_price = (SELECT MIN(price) FROM sellers WHERE vendor_code = \"${partnumber}\"), ` +
-                `avg_price = (SELECT AVG(price) FROM sellers WHERE vendor_code = \"${partnumber}\"), ` +
-                `max_price = (SELECT MAX(price) FROM sellers WHERE vendor_code = \"${partnumber}\") ` +
-                `WHERE vendor_code = "${partnumber}"`;
-
-            logger.debug(partnumber);
-            await queryFunction(sql);
-        });
-        resolve();
-    });
-};
-
 exports.addEmpty = function (id, partnumber) {
-    const table = 'empty';
-    const sql = 'INSERT INTO ' + table + '(id, vendor_code) VALUES (?)';
+    const sql = 'INSERT INTO  empty (id, vendor_code) VALUES (?)';
     return new Promise(async (resolve, reject) => {
         await queryFunction(sql, [id, partnumber]);
         resolve();
@@ -107,7 +63,7 @@ exports.addEmpty = function (id, partnumber) {
 };
 
 exports.findLast = function (table) {
-    const sql = "SELECT MAX(id) FROM " + table + " WHERE code_cat IS NOT NULL";
+    const sql = `SELECT MAX(id) FROM ${table} WHERE code_cat IS NOT NULL`;
     return new Promise(async (resolve, reject) => {
         const results = await queryFunction(sql);
         const result = results[0][Object.keys(results[0])];
@@ -139,14 +95,11 @@ exports.selectSellers = async function () {
 };
 
 exports.insertTables = function () {
-    return new Promise(async (resolve, reject) => {
-        await queryFunction('INSERT INTO excel(manufacturer, vendor_code, name, code_cat, ' +
-            'min_price, avg_price, max_price) SELECT manufacturer, vendor_code, ' +
-            'name, code_cat, min_price, avg_price, max_price FROM pre_excel ' +
+    return new Promise(async resolve => {
+        await queryFunction('INSERT INTO excel(manufacturer, vendor_code, name) ' +
+            'SELECT manufacturer, vendor_code, name FROM pre_excel ' +
             'ON DUPLICATE KEY UPDATE manufacturer=pre_excel.manufacturer,' +
-            'vendor_code=pre_excel.vendor_code, name=pre_excel.name,' +
-            'code_cat=pre_excel.code_cat, min_price=pre_excel.min_price,' +
-            'avg_price=pre_excel.avg_price, max_price=pre_excel.max_price');
+            'vendor_code=pre_excel.vendor_code, name=pre_excel.name');
 
         await queryFunction('INSERT INTO sellers(seller, vendor_code, price, instock, wholesale) SELECT seller, ' +
             'vendor_code, price, instock, wholesale FROM pre_sellers ON DUPLICATE KEY UPDATE ' +
@@ -178,12 +131,12 @@ exports.cleanTablesSocket = async function () {
     });
 };
 
-exports.convertToCSV = function (outfile='C:/Temp') {
+exports.convertToCSV = function () {
     return new Promise(async resolve => {
-        logger.silly('Экспортируем в csv');
+        logger.info('Экспортируем в csv');
         const sql = `SELECT *
-                    FROM excel
-                    INTO OUTFILE ${outfile}
+                    FROM sellers
+                    INTO OUTFILE '${configuration.csv.path}${new Date().toString().replace(/[^\w\s]/gi, '')}.csv'
                     FIELDS TERMINATED BY ','
                     ENCLOSED BY '"'
                     LINES TERMINATED BY '\\n'`;
@@ -191,8 +144,4 @@ exports.convertToCSV = function (outfile='C:/Temp') {
         await queryFunction(sql);
         resolve();
     });
-};
-
-exports.getAllProductsFilter = async function () {
-    return await queryFunction('SELECT * FROM excel'); // WHERE codecat IS NOT NULL
 };

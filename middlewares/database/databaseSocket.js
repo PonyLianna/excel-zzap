@@ -1,7 +1,7 @@
 const queryFunction = require('./database').queryFunction;
 
 exports.addData = function (time) {
-    logger.debug(time);
+    logger.debug(`Добавляем таймер '${time}'`);
     queryFunction('INSERT INTO times (time) VALUES (?)', time);
 };
 

@@ -30,18 +30,18 @@ exports.main = function (io) { // DEFAULT FUNCTION
         socket.broadcast.emit('message', 'Новый клиент присоединился к вам');
 
 
-        socket.on('update', async function (time) {
+        socket.on('update', async function () {
             await database.cleanTablesSocket();
             await init.db_csv('main.csv', 'pre_excel');
             await codecat.codecat();
             await database.insertTables();
-            await database.findPrices();
+            await database.convertToCSV();
             socket.emit('message', 'База данных была обновлена')
         });
 
         socket.on('delete', async function (time) {
             await manipulate.truncateAll();
-            socket.emit('message', 'База данных была удалена');
+            socket.emit('message', 'База данных была очищена');
             logger.info('База обновлена');
         });
 
@@ -60,7 +60,7 @@ exports.main = function (io) { // DEFAULT FUNCTION
 
         socket.on('data', async function (message) {
             let text = `Данные оохранены`;
-            database.convertToCSV();
+            await database.convertToCSV();
             logger.debug(text);
             socket.emit('message', text);
             logger.info(text);
