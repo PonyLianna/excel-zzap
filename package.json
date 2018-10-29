@@ -33,6 +33,7 @@
     "monitor": "pm2 monit",
     "kill": "pm2 stop excel-zzap",
     "cleanLogs": "pm2 flush",
+    "startup": "npm install pm2 -g && npm install pm2-windows-startup -g && pm2-startup install && npm run service && pm2 save",
     "destroyEverything": "node ./scripts/destroyEverything.js",
     "recreate": "npm run destroyEverything && npm run createdb && npm run configure && npm run createAdmin",
     "create": "npm run createdb && npm run configure && npm run createAdmin",
