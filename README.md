@@ -2,7 +2,8 @@
 ## Требования для работы
 Вам потребуется
 1. установленный и включенный сервер [5.7.22 MySQL Community Server (GPL)](https://dev.mysql.com/downloads/mysql/5.7.html).
-2. API-ключ для сервиса zzap.
+2. Установленный [nodejs](https://nodejs.org/dist/v11.0.0/node-v11.0.0-x64.msi) (продукт тестировался на версии 11.0 x64)
+3. API-ключ для сервиса zzap. 
 
 ## Установка
 `git clone https://github.com/PonyLianna/excel-zzap` 
