@@ -134,7 +134,10 @@ exports.cleanTablesSocket = async function () {
 exports.convertToCSV = function () {
     return new Promise(async resolve => {
         logger.info('Экспортируем в csv');
-        const sql = `SELECT *
+        const sql = `
+                    SELECT 'id', 'Продавец', 'Код товара', 'Цена','Наличие на складе','Опт или розница'
+                    UNION ALL
+                    SELECT *
                     FROM sellers
                     INTO OUTFILE '${configuration.csv.path}${new Date().toString().replace(/[^\w\s]/gi, '')}.csv'
                     FIELDS TERMINATED BY ','
