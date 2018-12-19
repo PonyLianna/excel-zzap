@@ -7,6 +7,7 @@ const flash = require('connect-flash');
 const passportSocketIo = require('passport.socketio');
 const MySQLStore = require('connect-mysql')(session);
 
+global.stop = false; //stop variable
 global.logger = require('./middlewares/logger').main();
 
 const options = {config: require('./config/config').dbconfig};

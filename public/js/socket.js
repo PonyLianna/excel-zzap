@@ -1,5 +1,7 @@
 $(document).ready(function () {
+    let block = 0;
     let socket = io.connect('http://localhost:8080');
+
     socket.on('message', function (data) {
         $('#info').prepend('<p>' + data + '</p>');
     });
@@ -8,30 +10,33 @@ $(document).ready(function () {
         let percent = 100/data.length;
 
         $('#info').prepend('<p>' + data.time + '</p>');
-        if ((data.length > data.now) && ($('#process').hasClass('disabled'))) {
-            $(".progress.determinate").width('0%');
+        if (!block) {
+            if ((data.length > data.now) && ($('#process').hasClass('disabled'))) {
+                $(".progress.determinate").width('0%');
 
-            $('#date').text(new Date(data.startTime).toLocaleString('ru'));
-            $("p#progress").text("1 / " + data.length);
+                $('#date').text(new Date(data.startTime).toLocaleString('ru'));
+                $("p#progress").text("1 / " + data.length);
 
-            $("#preload-window").show("fast");
-            $("#preload-invisible").show("fast");
+                $("#preload-window").show("fast");
+                $("#preload-invisible").show("fast");
 
-            $('button').toggleClass('disabled');
-            $("#process").toggleClass('red');
-        }
-        else if (data.length === data.now) {
-            $("div.determinate").width('100%');
+                $('button').toggleClass('disabled');
 
-            $('button').toggleClass('disabled');
+                $("#process").toggleClass('red');
+                $('button#stop').toggleClass('disabled');
+            } else if (data.length === data.now) {
+                $("div.determinate").width('100%');
 
-            $("#preload-window").hide("fast");
-            $("#preload-invisible").hide("fast");
-        }
-        else {
-            console.log(percent * data.now + '%');
-            $("p#progress").text(data.now + " / " + data.length);
-            $("div.determinate").width(percent * data.now + '%');
+                $('button').toggleClass('disabled');
+
+                $("#preload-window").hide("fast");
+                $("#preload-invisible").hide("fast");
+                $('button#stop').toggleClass('disabled');
+            } else {
+                console.log(percent * data.now + '%');
+                $("p#progress").text(data.now + " / " + data.length);
+                $("div.determinate").width(percent * data.now + '%');
+            }
         }
     });
 
@@ -42,6 +47,19 @@ $(document).ready(function () {
             $('.collection').prepend('<li class="collection-item"><span>' + one_data.time + '</span><a class="secondary-content">' +
                 'удалить</a></li>');
         });
+    });
+
+    socket.on('block', function () {
+        $('button').toggleClass('disabled');
+        block = 1;
+
+        $("#preload-window").hide("fast");
+        $("#preload-invisible").hide("fast");
+    });
+
+    $('#stop').click(function(e){
+        e.preventDefault();
+        socket.emit('stop', 1);
     });
 
     $('#buttontext').click(function () {
@@ -89,6 +107,8 @@ $(document).ready(function () {
 
     $('#percentage').click(function (e) {
         e.preventDefault();
+        $('button#stop').removeClass('disabled');
+        block = 0;
         const time = new Date();
         socket.emit('update', time);
     });
