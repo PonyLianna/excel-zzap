@@ -23,6 +23,7 @@ exports.main = function (io) { // DEFAULT FUNCTION
 
         exports.times = async function () {
             socket.emit('time', await cron.list());
+            socket.broadcast.emit('time', await cron.list());
         };
 
         logger.info('К socket серверу присоединился клиент');
@@ -31,8 +32,7 @@ exports.main = function (io) { // DEFAULT FUNCTION
         exports.times();
 
         socket.broadcast.emit('message', 'Новый клиент присоединился к вам');
-
-
+        
         socket.on('stop', function () {
             stop = true;
 
@@ -49,12 +49,15 @@ exports.main = function (io) { // DEFAULT FUNCTION
             await codecat.codecat();
             await database.insertTables();
             await database.convertToCSV();
-            socket.emit('message', 'База данных была обновлена')
+
+            socket.emit('message', 'База данных была обновлена');
+            socket.broadcast.emit('message', 'База данных была обновлена');
         });
 
         socket.on('delete', async function (time) {
             await manipulate.truncateAll();
             socket.emit('message', 'База данных была очищена');
+            socket.broadcast.emit('message', 'База данных была очищена');
             logger.info('База обновлена');
         });
 
@@ -63,6 +66,7 @@ exports.main = function (io) { // DEFAULT FUNCTION
             cron.add(message);
             mysql.addData(message);
             socket.emit('message', `Добавлен таймер на ${message}`);
+            socket.broadcast.emit('message', `Добавлен таймер на ${message}`);
         });
 
         socket.on('time_del', async function (message) {
@@ -77,6 +81,7 @@ exports.main = function (io) { // DEFAULT FUNCTION
             await database.convertToCSV();
 
             socket.emit('message', text);
+            socket.broadcast.emit('message', text);
             logger.info(text);
         });
     });
