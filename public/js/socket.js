@@ -1,5 +1,6 @@
 $(document).ready(function () {
     let socket = io.connect('http://localhost:8080');
+
     socket.on('message', function (data) {
         $('#info').prepend('<p>' + data + '</p>');
     });
@@ -18,6 +19,7 @@ $(document).ready(function () {
             $("#preload-invisible").show("fast");
 
             $('button').toggleClass('disabled');
+            $('button#stop').toggleClass('disabled');
             $("#process").toggleClass('red');
         }
         else if (data.length === data.now) {
@@ -42,6 +44,18 @@ $(document).ready(function () {
             $('.collection').prepend('<li class="collection-item"><span>' + one_data.time + '</span><a class="secondary-content">' +
                 'удалить</a></li>');
         });
+    });
+
+    socket.on('block', function () {
+        $('button').toggleClass('disabled');
+
+        $("#preload-window").hide("fast");
+        $("#preload-invisible").hide("fast");
+    });
+
+    $('#stop').click(function(e){
+        e.preventDefault();
+        socket.emit('stop', 1);
     });
 
     $('#buttontext').click(function () {

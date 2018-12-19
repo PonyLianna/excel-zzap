@@ -27,11 +27,19 @@ exports.codecat = function () {
             let time = (products.length * 3.4);
             const startTime = new Date();
             logger.info(`Общее время выполнения: ${time} секунд`);
-            await asyncForEach(products, async function (product, index, array) {
+            await asyncForEach(products, async function (product, index, array) { // нужно переделать?
                 await waitFor(3400);
                 require('../app/socket').log(index, array, startTime);
                 logger.debug(product.id, product.vendor_code, product.manufacturer, product.name);
                 await request(product.id, product.vendor_code, product.manufacturer, product.name);
+
+                logger.debug(`Переменная stop со значением ${stop}`);
+                if (stop) {
+                    stop = false;
+                    throw new Error('Остановка процесса');
+                }
+            }).catch(()=>{
+                console.log('It\'s all folks');
             });
             await waitFor(4000);
             resolve();

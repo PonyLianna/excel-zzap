@@ -14,8 +14,11 @@ exports.main = function (io) { // DEFAULT FUNCTION
                 "now": i + 1,
                 startTime
             };
+
             logger.debug(message);
+
             socket.emit('codecat', message);
+            socket.broadcast.emit('codecat', message);
         };
 
         exports.times = async function () {
@@ -29,6 +32,16 @@ exports.main = function (io) { // DEFAULT FUNCTION
 
         socket.broadcast.emit('message', 'Новый клиент присоединился к вам');
 
+
+        socket.on('stop', function () {
+            stop = true;
+
+            socket.emit('message', 'Процесс остановлен');
+            socket.broadcast.emit('message', 'Процесс остановлен');
+
+            socket.emit('block', 1);
+            socket.broadcast.emit('block', 1);
+        });
 
         socket.on('update', async function () {
             await database.cleanTablesSocket();
@@ -49,6 +62,7 @@ exports.main = function (io) { // DEFAULT FUNCTION
             logger.info('Добавлен таймер на ' + message);
             cron.add(message);
             mysql.addData(message);
+            socket.emit('message', `Добавлен таймер на ${message}`);
         });
 
         socket.on('time_del', async function (message) {
@@ -61,7 +75,7 @@ exports.main = function (io) { // DEFAULT FUNCTION
         socket.on('data', async function (message) {
             let text = `Данные оохранены`;
             await database.convertToCSV();
-            logger.debug(text);
+
             socket.emit('message', text);
             logger.info(text);
         });
