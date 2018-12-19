@@ -16,9 +16,10 @@ exports.main = function (io) { // DEFAULT FUNCTION
             };
 
             logger.debug(message);
-
-            socket.emit('codecat', message);
-            socket.broadcast.emit('codecat', message);
+            if (!stop){
+                socket.emit('codecat', message);
+                socket.broadcast.emit('codecat', message);
+            }
         };
 
         exports.times = async function () {
@@ -44,14 +45,19 @@ exports.main = function (io) { // DEFAULT FUNCTION
         });
 
         socket.on('update', async function () {
+            stop = false;
+
             await database.cleanTablesSocket();
             await init.db_csv('main.csv', 'pre_excel');
             await codecat.codecat();
-            await database.insertTables();
-            await database.convertToCSV();
 
-            socket.emit('message', 'База данных была обновлена');
-            socket.broadcast.emit('message', 'База данных была обновлена');
+            if (!stop){
+                await database.insertTables();
+                await database.convertToCSV();
+
+                socket.emit('message', 'База данных была обновлена');
+                socket.broadcast.emit('message', 'База данных была обновлена');
+            }
         });
 
         socket.on('delete', async function (time) {
