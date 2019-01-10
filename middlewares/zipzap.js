@@ -28,6 +28,7 @@ exports.GetSearchResultV2 = function (id, partnumber, class_man, name) {
                 const parsed = JSON.parse(response.body.d).table;
                 logger.debug(parsed);
                 if (parsed.length) {
+                    await mysql.addCodecat(id, parsed[0].code_cat);
                     for (let table of parsed) {
                         if (table.local) {
                             await mysql.addNewSeller(table.class_user, partnumber,
