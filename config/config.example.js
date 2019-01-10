@@ -23,7 +23,4 @@ config.secret = 'mysecretisapony';
 /* ZZAP CONFIGURATION */
 config.api_key = '';
 
-/* CLIENTSIDE MUST BE CHANGED DIRECTLY! */
-// ./public/js/socket.js SECOND ROW
-
 module.exports = config;

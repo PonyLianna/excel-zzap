@@ -1,6 +1,6 @@
 $(document).ready(function () {
     let block = 0;
-    let socket = io.connect('http://localhost:8080');
+    let socket = io.connect(location.href);
 
     socket.on('message', function (data) {
         $('#info').prepend('<p>' + data + '</p>');
