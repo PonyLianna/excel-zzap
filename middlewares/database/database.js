@@ -156,7 +156,7 @@ exports.convertToCSV = function () {
                         'Название'
                     UNION ALL SELECT 
                         sellers.id,
-                        sellers.seller as,
+                        sellers.seller,
                         sellers.vendor_code,
                         sellers.price,
                         sellers.instock,
@@ -172,6 +172,7 @@ exports.convertToCSV = function () {
                     FIELDS TERMINATED BY ','
                     ENCLOSED BY '"'
                     LINES TERMINATED BY '\\n'`;
+
 
         await queryFunction(sql);
         resolve();
