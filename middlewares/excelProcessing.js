@@ -1,5 +1,4 @@
 const xlsx = require('xlsx');
-const mysql = require('./database/database');
 const fs = require('fs');
 
 exports.csv = function (filename, outname) {
