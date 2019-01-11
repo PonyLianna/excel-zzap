@@ -35,7 +35,7 @@ const excelColumn = '(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, ' +
     'manufacturer VARCHAR(40), ' +
     'vendor_code VARCHAR(100), ' +
     'name VARCHAR(160),' +
-    'code_cat VARCHAR(20), ' +
+    'codecat VARCHAR(20), ' +
     'UNIQUE KEY manufacturer (manufacturer, vendor_code, name))';
 
 const usersColumn = '(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, ' +
