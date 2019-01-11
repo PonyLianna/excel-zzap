@@ -62,6 +62,15 @@ exports.addEmpty = function (id, partnumber) {
     });
 };
 
+exports.addCodecat = async function (id, code_cat) {
+    return new Promise(async resolve => {
+        const sql = `UPDATE pre_excel SET codecat = ${code_cat} WHERE id = ${id}`;
+        console.log(sql);
+        await queryFunction(sql);
+        resolve();
+    });
+};
+
 exports.findLast = function (table) {
     const sql = `SELECT MAX(id) FROM ${table} WHERE code_cat IS NOT NULL`;
     return new Promise(async (resolve, reject) => {
@@ -134,8 +143,33 @@ exports.cleanTablesSocket = async function () {
 exports.convertToCSV = function () {
     return new Promise(async resolve => {
         logger.info('Экспортируем в csv');
-        const sql = `SELECT *
-                    FROM sellers
+        const sql = `
+                    SELECT 
+                        'id',
+                        'Продавец',
+                        'Код товара',
+                        'Цена',
+                        'Наличие на складе',
+                        'Опт или розница',
+                        'excelId',
+                        'Изготовитель',
+                        'Название',
+                        'codecat'
+                    UNION ALL SELECT 
+                        sellers.id,
+                        sellers.seller,
+                        sellers.vendor_code,
+                        sellers.price,
+                        sellers.instock,
+                        sellers.wholesale,
+                        excel.id,
+                        excel.manufacturer,
+                        excel.name,
+                        excel.codecat
+                    FROM
+                        sellers
+                            LEFT JOIN
+                        excel ON sellers.vendor_code = excel.vendor_code
                     INTO OUTFILE '${configuration.csv.path}${new Date().toString().replace(/[^\w\s]/gi, '')}.csv'
                     FIELDS TERMINATED BY ','
                     ENCLOSED BY '"'

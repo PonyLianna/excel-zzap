@@ -22,7 +22,7 @@ function request(id, partnumber, class_man, name) {
 }
 
 exports.codecat = function () {
-    return new Promise(async (resolve, reject) => {
+    return new Promise(async resolve => {
         mysql.getAllProducts().then(async function (products) {
             let time = (products.length * 3.4);
             const startTime = new Date();
@@ -32,7 +32,13 @@ exports.codecat = function () {
                 require('../app/socket').log(index, array, startTime);
                 logger.debug(product.id, product.vendor_code, product.manufacturer, product.name);
                 await request(product.id, product.vendor_code, product.manufacturer, product.name);
+
+                logger.debug(`Переменная stop со значением ${stop}`);
+                if (stop) throw new Error('Остановка процесса');
+            }).catch(()=>{
+                logger.debug('Процесс остановлен');
             });
+
             await waitFor(4000);
             resolve();
         });

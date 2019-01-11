@@ -57,8 +57,6 @@ $(document).ready(function () {
         });
     });
 
-
-
     $('#change-time').click(function () {
         $("#change-time").toggleClass('red');
         const $e = $(this);
