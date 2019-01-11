@@ -105,10 +105,10 @@ exports.selectSellers = async function () {
 
 exports.insertTables = function () {
     return new Promise(async resolve => {
-        await queryFunction('INSERT INTO excel(manufacturer, vendor_code, name) ' +
-            'SELECT manufacturer, vendor_code, name FROM pre_excel ' +
+        await queryFunction('INSERT INTO excel(manufacturer, vendor_code, name, codecat) ' +
+            'SELECT manufacturer, vendor_code, name, codecat FROM pre_excel ' +
             'ON DUPLICATE KEY UPDATE manufacturer=pre_excel.manufacturer,' +
-            'vendor_code=pre_excel.vendor_code, name=pre_excel.name');
+            'vendor_code=pre_excel.vendor_code, name=pre_excel.name, codecat=pre_excel.codecat');
 
         await queryFunction('INSERT INTO sellers(seller, vendor_code, price, instock, wholesale) SELECT seller, ' +
             'vendor_code, price, instock, wholesale FROM pre_sellers ON DUPLICATE KEY UPDATE ' +
