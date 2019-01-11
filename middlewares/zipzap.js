@@ -24,30 +24,32 @@ exports.GetSearchResultV2 = function (id, partnumber, class_man, name) {
         console.log(options.json);
         request(options, async function (err, response) {
             if (response) {
-                if (err) logger.error(err);
-                const parsed = JSON.parse(response.body.d).table;
-                logger.debug(parsed);
-                if (parsed.length) {
-                    await mysql.addCodecat(id, parsed[0].code_cat);
-                    for (let table of parsed) {
-                        if (table.local) {
-                            await mysql.addNewSeller(table.class_user, partnumber,
-                                table.price.replace('р.', '').replace(' ', ''),
-                                table.instock, table.wholesale);
-                        } else {
-                            logger.debug(table.class_user + ' is non-local!');
+                if (response.body.d) {
+                    if (err) logger.error(err);
+                    const parsed = JSON.parse(response.body.d).table;
+                    logger.debug(parsed);
+                    if (parsed.length) {
+                        await mysql.addCodecat(id, parsed[0].code_cat);
+                        for (let table of parsed) {
+                            if (table.local) {
+                                await mysql.addNewSeller(table.class_user, partnumber,
+                                    table.price.replace('р.', '').replace(' ', ''),
+                                    table.instock, table.wholesale);
+                            } else {
+                                logger.debug(table.class_user + ' is non-local!');
+                            }
                         }
-                    }
-                    return resolve();
-                } else {
-                    await mysql.addEmpty(id, partnumber);
-                    logger.debug(`ID: ${id} is empty!`);
-                    console.log(JSON.parse(response.body.d).error);
-                    if (JSON.parse(response.body.d).error) {
-                        logger.error(response.body.d.error);
-                        return reject(response.body.d.error);
-                    } else {
                         return resolve();
+                    } else {
+                        await mysql.addEmpty(id, partnumber);
+                        logger.debug(`ID: ${id} is empty!`);
+                        console.log(JSON.parse(response.body.d).error);
+                        if (JSON.parse(response.body.d).error) {
+                            logger.error(response.body.d.error);
+                            return reject(response.body.d.error);
+                        } else {
+                            return resolve();
+                        }
                     }
                 }
             }
