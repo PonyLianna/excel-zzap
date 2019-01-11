@@ -62,9 +62,9 @@ exports.addEmpty = function (id, partnumber) {
     });
 };
 
-exports.addCodecat = async function (code_cat, id) {
+exports.addCodecat = async function (id, code_cat) {
     return new Promise(async resolve => {
-        const sql = `UPDATE pre_excel SET code_cat= ${code_cat} WHERE id = ${id}`;
+        const sql = `UPDATE pre_excel SET codecat = ${code_cat} WHERE id = ${id}`;
         console.log(sql);
         await queryFunction(sql);
         resolve();
@@ -153,7 +153,8 @@ exports.convertToCSV = function () {
                         'Опт или розница',
                         'excelId',
                         'Изготовитель',
-                        'Название'
+                        'Название',
+                        'codecat'
                     UNION ALL SELECT 
                         sellers.id,
                         sellers.seller,
@@ -163,7 +164,8 @@ exports.convertToCSV = function () {
                         sellers.wholesale,
                         excel.id,
                         excel.manufacturer,
-                        excel.name
+                        excel.name,
+                        excel.codecat
                     FROM
                         sellers
                             LEFT JOIN
@@ -172,7 +174,6 @@ exports.convertToCSV = function () {
                     FIELDS TERMINATED BY ','
                     ENCLOSED BY '"'
                     LINES TERMINATED BY '\\n'`;
-
 
         await queryFunction(sql);
         resolve();
