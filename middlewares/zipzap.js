@@ -25,9 +25,13 @@ exports.GetSearchResultV2 = function (id, partnumber, class_man, name) {
         request(options, async function (err, response) {
             if (response) {
                 if (response.body.d) {
-                    if (err) logger.error(err);
+                    if (err) {
+                        logger.error(err);
+                        return reject();
+                    }
                     const parsed = JSON.parse(response.body.d).table;
                     logger.debug(parsed);
+                    console.log(parsed);
                     if (parsed.length) {
                         await mysql.addCodecat(id, parsed[0].code_cat);
                         for (let table of parsed) {
@@ -52,6 +56,8 @@ exports.GetSearchResultV2 = function (id, partnumber, class_man, name) {
                         }
                     }
                 }
+            } else {
+                return reject()
             }
         });
     });

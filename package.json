@@ -64,8 +64,5 @@
     "mocha": "^5.2.0",
     "should": "^11.1.0",
     "supertest": "^3.1.0"
-  },
-  "caminte": {
-    "adapter": "mysql"
   }
 }
