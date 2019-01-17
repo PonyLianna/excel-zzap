@@ -2,7 +2,9 @@ const myfile = require('../middlewares/fileUpload');
 const excel = require('../middlewares/excelProcessing');
 const database = require('../middlewares/database/database');
 const cron = require('../middlewares/cron');
-
+const configuration = require('../config/config');
+const path = require('path');
+const fs = require('fs');
 const waitFor = (ms) => new Promise(r => setTimeout(r, ms));
 
 module.exports = function (app, passport, io) {
@@ -48,6 +50,26 @@ module.exports = function (app, passport, io) {
         res.redirect('/login');
     });
 
+    app.get('/temp', isLoggedIn, function (req, res) {
+        fs.readdir(configuration.csv.path, (err, files) => {
+            files.forEach(file => {
+                console.log(file);
+            });
+        })
+    });
+
+    app.get('/temp/:filename', isLoggedIn, async function (req, res) {
+        if (req.params) {
+            if (req.params.filename) {
+                path.exists(`${configuration.csv.path}${req.params.filename}`, (exists) => {
+                    if (exists) {
+                        res.download(configuration.csv.path, req.params.filename);
+                    }
+                })
+            }
+        }
+    });
+
     app.get('*', function (req, res) {
         res.redirect('/login');
     });
@@ -56,7 +78,7 @@ module.exports = function (app, passport, io) {
 function isLoggedIn(req, res, next) {
     logger.info('Попытка авторизации при помощи существующей сессии');
     // if user is authenticated in the session, carry on
-    if (req.isAuthenticated()){
+    if (req.isAuthenticated()) {
         logger.info('Пользователь авторизован');
         return next();
     }

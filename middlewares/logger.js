@@ -18,6 +18,7 @@ exports.main = function () {
                 handleExceptions: true,
                 maxsize: 10485760, //10MB
                 maxFiles: 1,
+                level: 'silly'
             })
         ]
     });

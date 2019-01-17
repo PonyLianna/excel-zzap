@@ -143,6 +143,7 @@ exports.cleanTablesSocket = async function () {
 exports.convertToCSV = function () {
     return new Promise(async resolve => {
         logger.info('Экспортируем в csv');
+        global.last_file = `${new Date().toString().replace(/[^\\w\\s]/gi, '')}.csv`;
         const sql = `
                     SELECT 
                         'id',
@@ -170,7 +171,7 @@ exports.convertToCSV = function () {
                         sellers
                             LEFT JOIN
                         excel ON sellers.vendor_code = excel.vendor_code
-                    INTO OUTFILE '${configuration.csv.path}${new Date().toString().replace(/[^\w\s]/gi, '')}.csv'
+                    INTO OUTFILE '${configuration.csv.path}${global.last_file}'
                     FIELDS TERMINATED BY ','
                     ENCLOSED BY '"'
                     LINES TERMINATED BY '\\n'`;
