@@ -24,6 +24,42 @@ module.exports = function (app, passport, io) {
         res.end('Файл загружен');
     });
 
+    app.get('/temp', isLoggedIn, function (req, res) {
+        fs.readdir(configuration.csv.path, async (err, files) => {
+            res.render('temp', {
+                title: 'Hey',
+                final: files.map((file) => `${req.get('host')}/temp/final/${file}`),
+                uploads: [`${req.get('host')}/temp/uploads/main.xlsx`, `${req.get('host')}/temp/uploads/main.csv`]
+            });
+        })
+    });
+
+    app.get('/temp/final/:filename(*)', isLoggedIn, async function (req, res) {
+        if (req.params && req.params.filename) {
+            const local_path = path.join(configuration.csv.path, req.params.filename);
+            fs.exists(local_path, function (exists) {
+                if (exists)
+                    res.download(path.join(configuration.csv.path, req.params.filename));
+                else
+                    res.render('error', {error: 'Ошибка: Введено неправильное название файла'});
+            })
+        }
+    });
+
+    app.get('/temp/uploads/:filename(*)', isLoggedIn, async function (req, res) {
+        if (req.params && req.params.filename) {
+            const local_path = path.join(`${__filename}/../../uploads`, req.params.filename);
+            console.log(local_path);
+
+            fs.exists(local_path, function (exists) {
+                if (exists)
+                    res.download(local_path);
+                else
+                    res.render('error', {error: 'Ошибка: Введено неправильное название файла'});
+            })
+        }
+    });
+
     app.get('/login', function (req, res) {
         res.sendFile('login.html', {root: './public'});
     });
@@ -48,26 +84,6 @@ module.exports = function (app, passport, io) {
     app.get('/logout', function (req, res) {
         req.logout();
         res.redirect('/login');
-    });
-
-    app.get('/temp', isLoggedIn, function (req, res) {
-        fs.readdir(configuration.csv.path, (err, files) => {
-            files.forEach(file => {
-                console.log(file);
-            });
-        })
-    });
-
-    app.get('/temp/:filename', isLoggedIn, async function (req, res) {
-        if (req.params) {
-            if (req.params.filename) {
-                path.exists(`${configuration.csv.path}${req.params.filename}`, (exists) => {
-                    if (exists) {
-                        res.download(configuration.csv.path, req.params.filename);
-                    }
-                })
-            }
-        }
     });
 
     app.get('*', function (req, res) {

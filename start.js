@@ -9,7 +9,6 @@ const MySQLStore = require('connect-mysql')(session);
 
 global.stop = false; //stop variable
 global.logger = require('./middlewares/logger').main();
-global.last_file = '';
 
 const options = {config: require('./config/config').dbconfig};
 options.config.database = require('./config/config').dbname;
@@ -21,7 +20,7 @@ server = Server(app);
 const io = require('socket.io')(server);
 
 require('./middlewares/passport')(passport); // pass passport for configuration
-// app.use(morgan('combined', { 'stream': logger.stream}));
+
 app.use(cookieParser()); // read cookies
 app.use(bodyParser.urlencoded({
     extended: true
@@ -48,7 +47,7 @@ app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
 
-app.set('view engine', 'ejs');
+app.set('view engine', 'pug');
 
 require('./app/routes')(app, passport, io);
 require('./app/socket').main(io);

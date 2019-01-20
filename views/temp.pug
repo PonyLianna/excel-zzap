@@ -1,0 +1,29 @@
+doctype html
+html
+    head
+        meta(charset='utf-8')
+        title= test
+        script(src='/js/jquery-3.3.1.min.js')
+        script(src='/js/temp.js')
+        style
+            include css/temp.css
+            include css/materialize.min.css
+
+    body
+        div#main
+            table
+                thead
+                    tr: th Final
+                each val1 in final
+                    tr
+                        td
+                            a(href= val1
+                            download)= val1
+            table
+                thead
+                    tr: th Uploads
+                each val2 in uploads
+                    tr
+                        td
+                            a(href= val2
+                            download)= val2
