@@ -9,6 +9,7 @@ const MySQLStore = require('connect-mysql')(session);
 
 global.logger = require('./middlewares/logger').main();
 global.stop = false; //stop variable
+global.logger = require('./middlewares/logger').main();
 
 const options = {config: require('./config/config').dbconfig};
 options.config.database = require('./config/config').dbname;
