@@ -43,11 +43,12 @@ const usersColumn = '(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, ' +
     'password VARCHAR(100))';
 
 const sellersColumn = '(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, ' +
-    'seller VARCHAR(255), ' +
+    'seller VARCHAR(191), ' +
     'vendor_code VARCHAR(100), ' +
     'price DECIMAL(10,2), ' +
     'instock TINYINT(1), ' +
-    'wholesale TINYINT(1))';
+    'wholesale TINYINT(1),' +
+    'UNIQUE KEY seller (seller, vendor_code, price, instock, wholesale))';
 
 const emptyCodecat = '(id INT NOT NULL, ' +
     'vendor_code VARCHAR(100))';
