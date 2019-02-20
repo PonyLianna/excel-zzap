@@ -168,10 +168,11 @@ exports.convertToCSV = function () {
                         excel.codecat
                     FROM
                         sellers
-                            LEFT JOIN
+                    LEFT JOIN
                         excel ON sellers.vendor_code = excel.vendor_code
+                    ORDER BY abs(excelId) asc 
                     INTO OUTFILE '${configuration.csv.path}${new Date().toString().replace(/[^\w\s]/gi, '')}.csv'
-                    FIELDS TERMINATED BY ','
+                    FIELDS TERMINATED BY '|'
                     ENCLOSED BY '"'
                     LINES TERMINATED BY '\\n'`;
 
