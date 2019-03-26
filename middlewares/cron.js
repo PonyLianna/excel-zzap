@@ -10,7 +10,8 @@ let jobs = {};
 
 exports.init = async function () {
     const result = await mysql.readData();
-    result.forEach(function (data) {
+    // result.forEach(function (data) {
+    for (let data of result) {
         max = data.id;
         let time = '';
         let spec = 0;
@@ -31,7 +32,8 @@ exports.init = async function () {
             if (!spec) await mysql.delData((await exports.find(time)[0]).time);
             await socket.times();
         }, null, true);
-    });
+    }
+    // });
 };
 
 exports.add = function (time) {
