@@ -4,7 +4,6 @@ package-lock.json
 /public/js/zzap.js
 /config/email.js
 /middlewares/db/postgresql.js
-/scripts/createtable.js
 /middlewares/sequelize
 /config/config.js
 /models

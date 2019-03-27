@@ -1,6 +1,6 @@
 const Service = require('node-windows').Service;
 
-global.logger = require('./middlewares/logger').main();
+global.logger = require('../middlewares/logger').main();
 
 let svc = new Service({
     name: 'excel-zzap',

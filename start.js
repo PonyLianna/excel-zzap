@@ -9,7 +9,6 @@ const MySQLStore = require('connect-mysql')(session);
 
 global.logger = require('./middlewares/logger').main();
 global.stop = false; //stop variable
-// global.logger = require('./middlewares/logger').main();
 
 const options = {config: require('./config/config').dbconfig};
 options.config.database = require('./config/config').dbname;
@@ -21,7 +20,7 @@ server = Server(app);
 const io = require('socket.io')(server);
 
 require('./middlewares/passport')(passport); // pass passport for configuration
-// app.use(morgan('combined', { 'stream': logger.stream}));
+
 app.use(cookieParser()); // read cookies
 app.use(bodyParser.urlencoded({
     extended: true
