@@ -5,7 +5,7 @@ global.logger = require('../middlewares/logger').main();
 let svc = new Service({
     name: 'excel-zzap',
     description: 'excel-zzap webserver.',
-    script: `${__dirname}/start.js`
+    script: `${__dirname}\\..\\start.js`
 });
 
 svc.on('install', () => {

@@ -30,7 +30,7 @@
     "configure": "node ./scripts/configure.js",
     "start": "node start.js",
     "service": "node ./scripts/serviceInstall.js",
-    "serviceUninstall":  "node ./scripts/serviceUninstall.js",
+    "serviceUninstall": "node ./scripts/serviceUninstall.js",
     "destroyEverything": "node ./scripts/destroyEverything.js",
     "recreate": "npm run destroyEverything && npm run createdb && npm run configure && npm run createAdmin",
     "create": "npm run createdb && npm run configure && npm run createAdmin",
