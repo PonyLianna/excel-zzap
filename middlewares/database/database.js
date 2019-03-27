@@ -50,6 +50,12 @@ exports.addNewSeller = function (class_user, partnumber, price, instock, wholesa
     const sql = 'INSERT INTO pre_sellers(seller,vendor_code,price,instock,wholesale) VALUES (?)';
     return new Promise(async resolve => {
         await queryFunction(sql, [class_user, partnumber, price, instock, wholesale]);
+        logger.info(`Добавляем нового продавца с данными`);
+        logger.info(`Название: ${class_user}`);
+        logger.info(`Номер детали: ${partnumber}`);
+        logger.info(`Цена: ${price}`);
+        logger.info(`Наличие: ${instock}`);
+        logger.info(`Тип цены: ${wholesale}`);
         resolve()
     });
 };
@@ -58,6 +64,8 @@ exports.addEmpty = function (id, partnumber) {
     const sql = 'INSERT INTO  empty (id, vendor_code) VALUES (?)';
     return new Promise(async (resolve, reject) => {
         await queryFunction(sql, [id, partnumber]);
+        logger.info(`Добавляем пустой артикул`);
+        logger.info(`ID: ${id}\nНомер детали: ${partnumber}`);
         resolve();
     });
 };
@@ -65,8 +73,11 @@ exports.addEmpty = function (id, partnumber) {
 exports.addCodecat = async function (id, code_cat) {
     return new Promise(async resolve => {
         const sql = `UPDATE pre_excel SET codecat = ${code_cat} WHERE id = ${id}`;
-        console.log(sql);
+        logger.info(`Добавляем codecat`);
+        logger.info(`codecat: ${code_cat}`);
+        logger.info(`ID: ${id}`);
         await queryFunction(sql);
+
         resolve();
     });
 };
