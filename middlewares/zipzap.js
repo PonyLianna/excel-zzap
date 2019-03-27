@@ -37,7 +37,7 @@ exports.GetSearchResultV2 = function (id, partnumber, class_man, name) {
                         for (let table of parsed) {
                             if (table.local) {
                                 await mysql.addNewSeller(table.class_user, partnumber,
-                                    table.price.replace('р.', '').replace(' ', ''),
+                                    table.price.replace('р.', '').replace(/ /g, ''),
                                     table.instock, table.wholesale);
                             } else {
                                 logger.debug(table.class_user + ' is non-local!');
