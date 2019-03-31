@@ -1,3 +1,5 @@
+const $ = require('jquery');
+
 $(document).ready(function () {
     $('.datepicker-day-button').click(function () {
         if ($('#change-time').text() == 'EVERYTIME'){
@@ -42,9 +44,21 @@ $(document).ready(function () {
         $(".btn-small.waves-effect.scale-transition").toggleClass("scale-out");
     });
 
-    $('#form').submit(function (e) {
+    $('#send').click(function (e) {
         e.preventDefault();
-        $(this).ajaxSubmit({
+        const data = new FormData();
+
+        $.each($('form#form')[0].files, function(i, file) {
+            data.append('file-'+i, file);
+        });
+
+        $.ajax({
+            url: '/',
+            data: data,
+            cache: false,
+            contentType: false,
+            processData: false,
+            method: 'POST',
             success: function (answer) {
                 $('div#info').prepend(
                     '<div>' + answer + '</div>');

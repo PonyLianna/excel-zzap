@@ -1,3 +1,6 @@
+const $ = require('jquery');
+const io = require('socket.io-client');
+
 $(document).ready(function () {
     let block = 0;
     let socket = io.connect(location.href);
