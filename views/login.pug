@@ -1,0 +1,26 @@
+doctype html
+html
+    head
+        title Авторизируйтесь пожалуйста
+        link(rel='stylesheet', href='/css/materialize.min.css')
+        link(rel='stylesheet', href='/css/icon.css')
+    body
+        div.valign-wrapper(style='width:100%;height:100%;position: absolute;')
+            div.valign(style='width:100%;')
+                div.container
+                    div.row
+                        div.col.s12.m6.offset-m3
+                            div.center
+                                h6 Авторизация
+                            br
+                            div.row
+                                form(method='post', action='/login')
+                                    label(for='username') Введите ваш логин
+                                    input(type='text', name='username' required)#username
+
+                                    label(for='password') Введите ваш пароль
+                                    input(type='password', name='password' required)#password
+                                    br
+                                    br
+                                    button.btn-small.waves-effect.waves-light.left Авторизация
+                                        i.material-icons.right send

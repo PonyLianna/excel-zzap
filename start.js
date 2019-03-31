@@ -38,6 +38,7 @@ const config = {
 };
 
 app.use(session(config)); // session secret
+
 io.use(passportSocketIo.authorize(config));
 
 app.use('/js', express.static(__dirname + '/public/js'));
@@ -47,7 +48,7 @@ app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
 
-app.set('view engine', 'ejs');
+app.set('view engine', 'pug');
 
 require('./app/routes')(app, passport, io);
 require('./app/socket').main(io);

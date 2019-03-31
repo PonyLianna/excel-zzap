@@ -10,7 +10,7 @@ module.exports = function (app, passport, io) {
 
     // Home page
     app.get('/', isLoggedIn, function (req, res) {
-        res.sendFile('index.html', {root: './public'});
+        res.render('index');
     });
 
     app.post('/', isLoggedIn, async function (req, res) {
@@ -23,7 +23,7 @@ module.exports = function (app, passport, io) {
     });
 
     app.get('/login', function (req, res) {
-        res.sendFile('login.html', {root: './public'});
+        res.render('login');
     });
 
     // process the login form
