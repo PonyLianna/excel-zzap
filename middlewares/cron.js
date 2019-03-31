@@ -10,30 +10,30 @@ let jobs = {};
 
 exports.init = async function () {
     const result = await mysql.readData();
-    // result.forEach(function (data) {
-    for (let data of result) {
-        max = data.id;
-        let time = '';
-        let spec = 0;
+    if (result) {
+        for (let data of result) {
+            max = data.id;
+            let time = '';
+            let spec = 0;
 
-        time = new Date(data.time);
-        logger.debug(time);
-        if (time == 'Invalid Date') {
-            time = data.time;
-            spec = 1;
+            time = new Date(data.time);
+            logger.debug(time);
+            if (time == 'Invalid Date') {
+                time = data.time;
+                spec = 1;
+            }
+
+            jobs[max] = new CronJob(time, async function () {
+                await database.cleanTablesSocket();
+                await init.db_csv('main.csv', 'pre_excel');
+                await codecat.codecat();
+                await database.insertTables();
+                await database.findPrices();
+                if (!spec) await mysql.delData((await exports.find(time)[0]).time);
+                await socket.times();
+            }, null, true);
         }
-
-        jobs[max] = new CronJob(time, async function () {
-            await database.cleanTablesSocket();
-            await init.db_csv('main.csv', 'pre_excel');
-            await codecat.codecat();
-            await database.insertTables();
-            await database.findPrices();
-            if (!spec) await mysql.delData((await exports.find(time)[0]).time);
-            await socket.times();
-        }, null, true);
     }
-    // });
 };
 
 exports.add = function (time) {
